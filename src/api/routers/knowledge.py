@@ -19,6 +19,7 @@ from fastapi import (
     File,
     Form,
     HTTPException,
+    Request,
     UploadFile,
     WebSocket,
     WebSocketDisconnect,
@@ -75,6 +76,82 @@ def get_kb_manager():
     if kb_manager is None:
         kb_manager = KnowledgeBaseManager(base_dir=str(_kb_base_dir))
     return kb_manager
+
+
+# ============================================
+# OpenSnek KB Access Control (conditional)
+# ============================================
+# When NEXTAUTH_SECRET is set, these helpers filter KB visibility
+# per user. When not set, they return None (no filtering).
+
+
+async def _get_allowed_kb_names_from_request(request: Request) -> set[str] | None:
+    """
+    Return the set of KB names this user may access, or None to skip filtering.
+
+    Returns None (no filtering) when:
+    - OpenSnek is not active (no request.state.user)
+    - User is an admin
+
+    Otherwise returns the union of:
+    - KBs the user created (user_kbs table)
+    - KBs linked to courses the user is enrolled in
+    - KBs linked to courses the user owns (professor)
+    """
+    if not hasattr(request.state, "user"):
+        return None  # OpenSnek not active — vanilla DeepTutor
+
+    user = request.state.user
+    if user.role == "admin":
+        return None  # Admins see everything
+
+    try:
+        from sqlalchemy import text
+
+        from src.opensnek.database import async_session_factory
+
+        async with async_session_factory() as session:
+            result = await session.execute(
+                text("""
+                    SELECT kb_name FROM user_kbs
+                    WHERE user_id = (SELECT id FROM users WHERE azure_oid = :oid)
+                    UNION
+                    SELECT c.kb_name FROM courses c
+                    JOIN enrollments e ON e.course_id = c.id
+                    WHERE e.user_id = (SELECT id FROM users WHERE azure_oid = :oid)
+                      AND c.kb_name IS NOT NULL AND c.is_active = true
+                    UNION
+                    SELECT c.kb_name FROM courses c
+                    WHERE c.professor_id = (SELECT id FROM users WHERE azure_oid = :oid)
+                      AND c.kb_name IS NOT NULL AND c.is_active = true
+                """),
+                {"oid": user.azure_oid},
+            )
+            return {row[0] for row in result.fetchall()}
+    except Exception as e:
+        logger.warning(f"KB access check failed, falling back to no filtering: {e}")
+        return None  # Fail-open to avoid locking users out
+
+
+async def _record_kb_ownership(user, kb_name: str):
+    """Record that a user created a KB. Fire-and-forget — failures are silent."""
+    try:
+        from sqlalchemy import text
+
+        from src.opensnek.database import async_session_factory
+
+        async with async_session_factory() as session:
+            await session.execute(
+                text("""
+                    INSERT INTO user_kbs (user_id, kb_name)
+                    SELECT u.id, :kb_name FROM users u WHERE u.azure_oid = :oid
+                    ON CONFLICT (user_id, kb_name) DO NOTHING
+                """),
+                {"oid": user.azure_oid, "kb_name": kb_name},
+            )
+            await session.commit()
+    except Exception:
+        pass  # Never block KB creation on ownership tracking failure
 
 
 class KnowledgeBaseInfo(BaseModel):
@@ -359,11 +436,16 @@ async def set_default_kb(kb_name: str):
 
 
 @router.get("/list", response_model=list[KnowledgeBaseInfo])
-async def list_knowledge_bases():
+async def list_knowledge_bases(request: Request):
     """List all available knowledge bases with their details."""
     try:
         manager = get_kb_manager()
         kb_names = manager.list_knowledge_bases()
+
+        # OpenSnek: filter KBs by user access (owned + enrolled courses)
+        allowed = await _get_allowed_kb_names_from_request(request)
+        if allowed is not None:
+            kb_names = [n for n in kb_names if n in allowed]
 
         logger.info(f"Found {len(kb_names)} knowledge bases: {kb_names}")
 
@@ -429,21 +511,33 @@ async def list_knowledge_bases():
 
 
 @router.get("/{kb_name}")
-async def get_knowledge_base_details(kb_name: str):
+async def get_knowledge_base_details(kb_name: str, request: Request):
     """Get detailed info for a specific KB."""
     try:
+        # OpenSnek: verify user has access to this KB
+        allowed = await _get_allowed_kb_names_from_request(request)
+        if allowed is not None and kb_name not in allowed:
+            raise HTTPException(status_code=403, detail="Not authorized to access this knowledge base")
+
         manager = get_kb_manager()
         return manager.get_info(kb_name)
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.delete("/{kb_name}")
-async def delete_knowledge_base(kb_name: str):
+async def delete_knowledge_base(kb_name: str, request: Request):
     """Delete a knowledge base."""
     try:
+        # OpenSnek: only KB owner or admin can delete
+        allowed = await _get_allowed_kb_names_from_request(request)
+        if allowed is not None and kb_name not in allowed:
+            raise HTTPException(status_code=403, detail="Not authorized to delete this knowledge base")
+
         manager = get_kb_manager()
         success = manager.delete_knowledge_base(kb_name, confirm=True)
         if not success:
@@ -452,6 +546,8 @@ async def delete_knowledge_base(kb_name: str):
         return {"message": f"Knowledge base '{kb_name}' deleted successfully"}
     except ValueError:
         raise HTTPException(status_code=404, detail=f"Knowledge base '{kb_name}' not found")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -550,6 +646,7 @@ async def upload_files(
 
 @router.post("/create")
 async def create_knowledge_base(
+    request: Request,
     background_tasks: BackgroundTasks,
     name: str = Form(...),
     files: list[UploadFile] = File(...),
@@ -622,6 +719,10 @@ async def create_knowledge_base(
         )
 
         background_tasks.add_task(run_initialization_task, initializer)
+
+        # OpenSnek: record KB ownership so the creator can see it in filtered lists
+        if hasattr(request.state, "user"):
+            await _record_kb_ownership(request.state.user, name)
 
         logger.success(f"KB '{name}' created, processing {len(uploaded_files)} files in background")
 

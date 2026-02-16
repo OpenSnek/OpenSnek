@@ -25,8 +25,15 @@ import {
   Check,
   X,
   LucideIcon,
+  LogOut,
+  ChevronDown,
+  LayoutDashboard,
+  Library,
 } from "lucide-react";
+import { signOut } from "next-auth/react";
 import { useGlobal } from "@/context/GlobalContext";
+import { useAuth } from "@/context/AuthContext";
+import { useCourse } from "@/context/CourseContext";
 
 const SIDEBAR_EXPANDED_WIDTH = 256;
 const SIDEBAR_COLLAPSED_WIDTH = 64;
@@ -61,8 +68,12 @@ export default function Sidebar() {
     setSidebarDescription,
     sidebarNavOrder,
     setSidebarNavOrder,
+    setChatState,
   } = useGlobal();
   const { t } = useTranslation();
+  const { user, isAuthenticated } = useAuth();
+  const { courses, activeCourse, setActiveCourse } = useCourse();
+  const [showCourseDropdown, setShowCourseDropdown] = useState(false);
 
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
 
@@ -243,7 +254,7 @@ export default function Sidebar() {
                     : "opacity-100"
                 }`}
               >
-                DeepTutor
+                OpenSnek
               </h1>
             </div>
             <div
@@ -329,6 +340,93 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
+
+      {/* Course Selector — only when authenticated and courses exist */}
+      {isAuthenticated && courses.length > 0 && (
+        <div
+          className={`border-b border-slate-100 dark:border-slate-700 transition-all duration-300 ${
+            sidebarCollapsed ? "px-2 py-2" : "px-3 py-2"
+          }`}
+        >
+          {sidebarCollapsed ? (
+            <div className="relative">
+              <button
+                onClick={() => setShowCourseDropdown(!showCourseDropdown)}
+                className="w-full flex items-center justify-center p-2 rounded-md hover:bg-white dark:hover:bg-slate-700 transition-colors"
+                title={activeCourse?.name || t("Select course")}
+              >
+                <Library className="w-5 h-5 text-teal-500" />
+              </button>
+              {showCourseDropdown && (
+                <div className="absolute left-full ml-2 top-0 z-50 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl py-1 min-w-[200px]">
+                  {courses.map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => {
+                        setActiveCourse(c);
+                        if (c.kb_name) setChatState((prev) => ({ ...prev, selectedKb: c.kb_name! }));
+                        setShowCourseDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 ${
+                        activeCourse?.id === c.id ? "text-teal-600 font-medium" : "text-slate-700 dark:text-slate-300"
+                      }`}
+                    >
+                      <span className="font-mono text-xs text-slate-400 mr-2">{c.code}</span>
+                      {c.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="relative">
+              <button
+                onClick={() => setShowCourseDropdown(!showCourseDropdown)}
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800 hover:bg-teal-100 dark:hover:bg-teal-900/30 transition-colors text-left"
+              >
+                <Library className="w-4 h-4 text-teal-500 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-medium text-teal-700 dark:text-teal-300 truncate">
+                    {activeCourse?.name || t("Select course")}
+                  </div>
+                  {activeCourse && (
+                    <div className="text-[10px] text-teal-500/70 font-mono">{activeCourse.code}</div>
+                  )}
+                </div>
+                <ChevronDown className={`w-3.5 h-3.5 text-teal-400 transition-transform ${showCourseDropdown ? "rotate-180" : ""}`} />
+              </button>
+              {showCourseDropdown && (
+                <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto">
+                  {courses.map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => {
+                        setActiveCourse(c);
+                        if (c.kb_name) setChatState((prev) => ({ ...prev, selectedKb: c.kb_name! }));
+                        setShowCourseDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${
+                        activeCourse?.id === c.id ? "text-teal-600 dark:text-teal-400 font-medium bg-teal-50/50 dark:bg-teal-900/10" : "text-slate-700 dark:text-slate-300"
+                      }`}
+                    >
+                      <span className="font-mono text-xs text-slate-400 mr-2">{c.code}</span>
+                      {c.name}
+                    </button>
+                  ))}
+                  <Link
+                    href="/courses"
+                    onClick={() => setShowCourseDropdown(false)}
+                    className="w-full text-left px-3 py-2 text-sm text-teal-600 dark:text-teal-400 hover:bg-slate-50 dark:hover:bg-slate-700 border-t border-slate-100 dark:border-slate-700 flex items-center gap-1.5 font-medium"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    {t("All Courses")}
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Navigation */}
       <nav
@@ -444,6 +542,41 @@ export default function Sidebar() {
           sidebarCollapsed ? "px-2 py-2" : "px-2 py-2"
         }`}
       >
+        {/* Professor Dashboard link */}
+        {isAuthenticated && (user?.role === "professor" || user?.role === "admin") && (
+          <div className="relative mb-1">
+            <Link
+              href="/professor"
+              className={`flex items-center rounded-md text-sm transition-all duration-200 ${
+                sidebarCollapsed
+                  ? "justify-center p-2"
+                  : "gap-2.5 pl-2 pr-1.5 py-2"
+              } ${
+                pathname.startsWith("/professor")
+                  ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+                  : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-amber-600 dark:hover:text-amber-400 border border-transparent"
+              }`}
+              onMouseEnter={() => sidebarCollapsed && setShowTooltip("/professor")}
+              onMouseLeave={() => setShowTooltip(null)}
+            >
+              <LayoutDashboard className="w-5 h-5 flex-shrink-0 text-amber-500" />
+              <span
+                className={`whitespace-nowrap flex-1 transition-all duration-300 ${
+                  sidebarCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
+                }`}
+              >
+                {t("Professor Dashboard")}
+              </span>
+            </Link>
+            {sidebarCollapsed && showTooltip === "/professor" && (
+              <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50 px-2.5 py-1.5 bg-slate-900 dark:bg-slate-700 text-white text-xs rounded-lg shadow-lg whitespace-nowrap pointer-events-none">
+                {t("Professor Dashboard")}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Settings */}
         <div className="relative">
           <Link
             href="/settings"
@@ -454,7 +587,7 @@ export default function Sidebar() {
             } ${
               pathname === "/settings"
                 ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-100 dark:border-slate-600"
-                : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100"
+                : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 border border-transparent"
             }`}
             onMouseEnter={() => sidebarCollapsed && setShowTooltip("/settings")}
             onMouseLeave={() => setShowTooltip(null)}
@@ -476,19 +609,54 @@ export default function Sidebar() {
               {t("Settings")}
             </span>
           </Link>
-          {/* Tooltip for collapsed state */}
           {sidebarCollapsed && showTooltip === "/settings" && (
             <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50 px-2.5 py-1.5 bg-slate-900 dark:bg-slate-700 text-white text-xs rounded-lg shadow-lg whitespace-nowrap pointer-events-none">
               {t("Settings")}
-              <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-900 dark:border-r-slate-700" />
             </div>
           )}
         </div>
 
+        {/* User info and sign out */}
+        {isAuthenticated && user && (
+          <div
+            className={`mt-2 flex items-center rounded-md transition-all duration-200 ${
+              sidebarCollapsed ? "justify-center p-2" : "gap-2.5 pl-2 pr-1.5 py-2"
+            }`}
+          >
+            {/* Avatar */}
+            <div className="w-7 h-7 rounded-full bg-teal-100 dark:bg-teal-900/40 flex items-center justify-center text-teal-600 dark:text-teal-400 font-bold text-xs flex-shrink-0">
+              {user.name.charAt(0).toUpperCase()}
+            </div>
+            {/* Name and role */}
+            <div
+              className={`flex-1 min-w-0 transition-all duration-300 ${
+                sidebarCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
+              }`}
+            >
+              <div className="text-xs font-medium text-slate-700 dark:text-slate-200 truncate">
+                {user.name}
+              </div>
+              <div className="text-[10px] text-slate-400 dark:text-slate-500 capitalize">
+                {user.role}
+              </div>
+            </div>
+            {/* Sign out button */}
+            <button
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className={`p-1.5 text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors ${
+                sidebarCollapsed ? "hidden" : ""
+              }`}
+              title={t("Sign out")}
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
         {/* Expand/Collapse button at bottom */}
         <button
           onClick={toggleSidebar}
-          className={`w-full mt-2 flex items-center rounded-md text-slate-400 dark:text-slate-500 hover:bg-white dark:hover:bg-slate-700 hover:text-blue-500 dark:hover:text-blue-400 hover:shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-slate-600 transition-all duration-200 ${
+          className={`w-full mt-1 flex items-center rounded-md text-slate-400 dark:text-slate-500 hover:bg-white dark:hover:bg-slate-700 hover:text-blue-500 dark:hover:text-blue-400 hover:shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-slate-600 transition-all duration-200 ${
             sidebarCollapsed ? "justify-center p-2" : "gap-2.5 pl-2 pr-1.5 py-2"
           }`}
           title={sidebarCollapsed ? t("Expand sidebar") : t("Collapse sidebar")}

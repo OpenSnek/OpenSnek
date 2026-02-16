@@ -1,7 +1,7 @@
 # ============================================
-# DeepTutor Docker Compose Configuration
+# OpenSnek Docker Compose Configuration
 # ============================================
-# This file provides orchestration for DeepTutor services
+# Built on DeepTutor — adds PostgreSQL, Redis, and multi-tenant support.
 #
 # Usage:
 #   Production:  docker compose up -d
@@ -9,13 +9,56 @@
 #   Build only:  docker compose build
 #
 # Prerequisites:
-#   1. Copy .env.example to .env and configure your API keys
+#   1. Run: python scripts/setup_wizard.py   (or copy .env.example to .env)
 #   2. Optionally customize config/main.yaml and config/agents.yaml
 # ============================================
 
 services:
   # ============================================
-  # All-in-One DeepTutor Service
+  # PostgreSQL — Users, courses, enrollments, activity
+  # ============================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: opensnek-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: opensnek
+      POSTGRES_USER: ${POSTGRES_USER:-opensnek}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-opensnek_secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-opensnek}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - opensnek-network
+
+  # ============================================
+  # Redis — Session cache
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: opensnek-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - opensnek-network
+
+  # ============================================
+  # OpenSnek (DeepTutor + OpenSnek layer)
   # ============================================
   deeptutor:
     build:
@@ -25,8 +68,13 @@ services:
       args:
         # Pass backend port at build time for Next.js static optimization
         - BACKEND_PORT=${BACKEND_PORT:-8001}
-    container_name: deeptutor
+    container_name: opensnek
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     ports:
       - "${BACKEND_PORT:-8001}:${BACKEND_PORT:-8001}"
       - "${FRONTEND_PORT:-3782}:${FRONTEND_PORT:-3782}"
@@ -57,23 +105,28 @@ services:
       # Web Search Configuration (Optional)
       - SEARCH_PROVIDER=${SEARCH_PROVIDER:-perplexity}
       - SEARCH_API_KEY=${SEARCH_API_KEY:-}
-      # Logging: Configure in config/main.yaml -> logging.level
       # ============================================
       # Service Ports Configuration
       # ============================================
-      # Backend API port (default: 8001)
       - BACKEND_PORT=${BACKEND_PORT:-8001}
-      # Frontend web port (default: 3782)
       - FRONTEND_PORT=${FRONTEND_PORT:-3782}
       # ============================================
       # API URL Configuration (Important for Cloud Deployment)
       # ============================================
-      # For CLOUD/REMOTE deployment: Set this to your server's public URL
-      # Example: https://your-server.com:8001 or https://api.yourdomain.com
-      # If not set, defaults to http://localhost:${BACKEND_PORT} (only works locally)
       - NEXT_PUBLIC_API_BASE_EXTERNAL=${NEXT_PUBLIC_API_BASE_EXTERNAL:-}
-      # Alternative: Direct API base URL (same priority as NEXT_PUBLIC_API_BASE_EXTERNAL)
       - NEXT_PUBLIC_API_BASE=${NEXT_PUBLIC_API_BASE:-}
+      # ============================================
+      # OpenSnek Configuration
+      # ============================================
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-opensnek}:${POSTGRES_PASSWORD:-opensnek_secret}@postgres:5432/opensnek
+      - REDIS_URL=redis://redis:6379/0
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:${FRONTEND_PORT:-3782}}
+      - AZURE_AD_CLIENT_ID=${AZURE_AD_CLIENT_ID:-}
+      - AZURE_AD_CLIENT_SECRET=${AZURE_AD_CLIENT_SECRET:-}
+      - AZURE_AD_TENANT_ID=${AZURE_AD_TENANT_ID:-}
+      - UNIVERSITY_NAME=${UNIVERSITY_NAME:-University}
+      - NEXT_PUBLIC_UNIVERSITY_NAME=${UNIVERSITY_NAME:-University}
 
     volumes:
       # Mount local config directory (read-only)
@@ -91,11 +144,18 @@ services:
       start_period: 60s
 
     networks:
-      - deeptutor-network
+      - opensnek-network
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  postgres_data:
+  redis_data:
 
 # ============================================
 # Networks
 # ============================================
 networks:
-  deeptutor-network:
+  opensnek-network:
     driver: bridge

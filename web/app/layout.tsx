@@ -6,6 +6,10 @@ import { GlobalProvider } from "@/context/GlobalContext";
 import ThemeScript from "@/components/ThemeScript";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { I18nClientBridge } from "@/i18n/I18nClientBridge";
+import { AuthProvider } from "@/context/AuthContext";
+import { CourseProvider } from "@/context/CourseContext";
+import { ActivityReporter } from "@/components/ActivityReporter";
+import { AppShell } from "@/components/AppShell";
 
 // Use Inter font with swap display for better loading
 const font = Inter({
@@ -15,8 +19,8 @@ const font = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "DeepTutor Platform",
-  description: "Multi-Agent Teaching & Research Copilot",
+  title: "OpenSnek",
+  description: "AI-Powered University Learning Platform",
 };
 
 export default function RootLayout({
@@ -30,18 +34,18 @@ export default function RootLayout({
         <ThemeScript />
       </head>
       <body className={font.className}>
-        <GlobalProvider>
-          <I18nClientBridge>
-            <LayoutWrapper>
-              <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden transition-colors duration-200">
-                <Sidebar />
-                <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-900">
-                  {children}
-                </main>
-              </div>
-            </LayoutWrapper>
-          </I18nClientBridge>
-        </GlobalProvider>
+        <AuthProvider>
+          <GlobalProvider>
+            <I18nClientBridge>
+              <CourseProvider>
+                <LayoutWrapper>
+                  <AppShell>{children}</AppShell>
+                </LayoutWrapper>
+                <ActivityReporter />
+              </CourseProvider>
+            </I18nClientBridge>
+          </GlobalProvider>
+        </AuthProvider>
       </body>
     </html>
   );

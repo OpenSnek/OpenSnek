@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -148,7 +149,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="DeepTutor API",
+    title="OpenSnek API" if os.environ.get("NEXTAUTH_SECRET") else "DeepTutor API",
     version="1.0.0",
     lifespan=lifespan,
     # Disable automatic trailing slash redirects to prevent protocol downgrade issues
@@ -202,10 +203,40 @@ app.include_router(system.router, prefix="/api/v1/system", tags=["system"])
 app.include_router(config.router, prefix="/api/v1/config", tags=["config"])
 app.include_router(agent_config.router, prefix="/api/v1/agent-config", tags=["agent-config"])
 
+# ============================================
+# OpenSnek Integration (conditional)
+# ============================================
+# When NEXTAUTH_SECRET is set, enable authentication, course management,
+# and activity tracking. Otherwise, DeepTutor runs in single-user mode.
+if os.environ.get("NEXTAUTH_SECRET"):
+    try:
+        from src.opensnek.middleware import OpenSnekAuthMiddleware
+        from src.opensnek.routers import (
+            activity as opensnek_activity,
+            auth as opensnek_auth,
+            courses as opensnek_courses,
+            enrollments as opensnek_enrollments,
+            professor as opensnek_professor,
+        )
+
+        app.add_middleware(OpenSnekAuthMiddleware)
+
+        app.include_router(opensnek_auth.router, prefix="/api/v1/opensnek/auth", tags=["opensnek-auth"])
+        app.include_router(opensnek_courses.router, prefix="/api/v1/opensnek/courses", tags=["opensnek-courses"])
+        app.include_router(opensnek_enrollments.router, prefix="/api/v1/opensnek", tags=["opensnek-enrollments"])
+        app.include_router(opensnek_professor.router, prefix="/api/v1/opensnek/professor", tags=["opensnek-professor"])
+        app.include_router(opensnek_activity.router, prefix="/api/v1/opensnek", tags=["opensnek-activity"])
+
+        logger.info("OpenSnek multi-tenant layer enabled")
+    except ImportError as e:
+        logger.warning(f"OpenSnek layer could not be loaded: {e}")
+else:
+    logger.info("OpenSnek disabled (NEXTAUTH_SECRET not set) — running as vanilla DeepTutor")
+
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to DeepTutor API"}
+    return {"message": "Welcome to OpenSnek API" if os.environ.get("NEXTAUTH_SECRET") else "Welcome to DeepTutor API"}
 
 
 if __name__ == "__main__":

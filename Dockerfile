@@ -244,7 +244,16 @@ find /app/web/.next -type f \( -name "*.js" -o -name "*.json" \) -exec \
     sed -i "s|__NEXT_PUBLIC_API_BASE_PLACEHOLDER__|${API_BASE}|g" {} \; 2>/dev/null || true
 
 # Also update .env.local for any runtime reads
-echo "NEXT_PUBLIC_API_BASE=${API_BASE}" > /app/web/.env.local
+cat > /app/web/.env.local <<ENVEOF
+NEXT_PUBLIC_API_BASE=${API_BASE}
+NEXT_PUBLIC_UNIVERSITY_NAME=${UNIVERSITY_NAME:-University}
+NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-}
+NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:${FRONTEND_PORT}}
+AUTH_TRUST_HOST=true
+AZURE_AD_CLIENT_ID=${AZURE_AD_CLIENT_ID:-}
+AZURE_AD_CLIENT_SECRET=${AZURE_AD_CLIENT_SECRET:-}
+AZURE_AD_TENANT_ID=${AZURE_AD_TENANT_ID:-}
+ENVEOF
 
 # Start Next.js
 cd /app/web && exec node node_modules/next/dist/bin/next start -H 0.0.0.0 -p ${FRONTEND_PORT}
@@ -258,7 +267,7 @@ RUN cat > /app/entrypoint.sh <<'EOF'
 set -e
 
 echo "============================================"
-echo "🚀 Starting DeepTutor"
+echo "🚀 Starting OpenSnek"
 echo "============================================"
 
 # Set default ports if not provided
@@ -288,6 +297,14 @@ from pathlib import Path
 from src.services.setup import init_user_directories
 init_user_directories(Path('/app'))
 " 2>/dev/null || echo "   ⚠️ Directory initialization skipped (will be created on first use)"
+fi
+
+if [ -n "$NEXTAUTH_SECRET" ]; then
+    echo "🏫 University: ${UNIVERSITY_NAME:-University}"
+    echo "🔐 OpenSnek multi-tenant layer: ENABLED"
+    echo "   Azure AD Tenant: ${AZURE_AD_TENANT_ID:-not set}"
+else
+    echo "🔓 OpenSnek layer: DISABLED (running as vanilla DeepTutor)"
 fi
 
 echo "============================================"
