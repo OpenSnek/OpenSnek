@@ -269,25 +269,23 @@ async def deactivate_course(
     """Deactivate (soft-delete) a course. Owner professor or admin only."""
     user = await _require_auth(request)
 
-    result = await db.execute(
+    # Verify ownership (professor) or admin access
+    owner_check = await db.execute(
         text("""
-            UPDATE courses SET is_active = false
-            WHERE id = :cid
-              AND professor_id = (SELECT id FROM users WHERE azure_oid = :oid)
-            RETURNING id
+            SELECT c.id FROM courses c
+            JOIN users u ON c.professor_id = u.id
+            WHERE c.id = :cid AND (u.azure_oid = :oid OR :role = 'admin')
         """),
-        {"cid": course_id, "oid": user.azure_oid},
+        {"cid": course_id, "oid": user.azure_oid, "role": user.role},
+    )
+    if not owner_check.first():
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    await db.execute(
+        text("UPDATE courses SET is_active = false WHERE id = :cid"),
+        {"cid": course_id},
     )
     await db.commit()
-
-    if user.role != "admin" and not result.first():
-        raise HTTPException(status_code=403, detail="Not authorized")
-    elif user.role == "admin":
-        await db.execute(
-            text("UPDATE courses SET is_active = false WHERE id = :cid"),
-            {"cid": course_id},
-        )
-        await db.commit()
 
     return {"status": "ok"}
 

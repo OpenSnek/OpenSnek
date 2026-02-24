@@ -129,8 +129,8 @@ async def _get_allowed_kb_names_from_request(request: Request) -> set[str] | Non
             )
             return {row[0] for row in result.fetchall()}
     except Exception as e:
-        logger.warning(f"KB access check failed, falling back to no filtering: {e}")
-        return None  # Fail-open to avoid locking users out
+        logger.warning(f"KB access check failed, denying access: {e}")
+        return set()  # Fail closed — user sees no KBs until DB recovers
 
 
 async def _record_kb_ownership(user, kb_name: str):

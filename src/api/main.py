@@ -160,9 +160,20 @@ app = FastAPI(
 )
 
 # Configure CORS
+# When OpenSnek is enabled, restrict origins to the frontend URL.
+# When disabled (vanilla DeepTutor), allow all origins for dev convenience.
+if os.environ.get("NEXTAUTH_SECRET"):
+    _frontend_url = os.environ.get(
+        "NEXTAUTH_URL",
+        f"http://localhost:{os.environ.get('FRONTEND_PORT', '3782')}",
+    )
+    _cors_origins = [_frontend_url.rstrip("/")]
+else:
+    _cors_origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific frontend origin
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

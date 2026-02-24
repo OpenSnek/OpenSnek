@@ -123,6 +123,7 @@ Request → CORS Middleware → OpenSnekAuthMiddleware* → Route Handler
 - `/api/v1/opensnek/courses/*` — CRUD, KB linking
 - `/api/v1/opensnek/enroll` — join by enrollment code
 - `/api/v1/opensnek/enrollments` — list user enrollments
+- `/api/v1/opensnek/courses/{id}/leave` — student self-unenroll
 - `/api/v1/opensnek/courses/{id}/students/*` — student list, removal
 - `/api/v1/opensnek/professor/*` — analytics (features, topics, timeline, per-student)
 - `/api/v1/opensnek/activity` — frontend activity log submission

@@ -113,14 +113,29 @@ async def _log_activity_bg(
         from src.opensnek.database import async_session_factory
 
         async with async_session_factory() as session:
+            # Look up user's active course (most recently enrolled)
+            course_result = await session.execute(
+                text("""
+                    SELECT e.course_id FROM enrollments e
+                    JOIN users u ON e.user_id = u.id
+                    JOIN courses c ON e.course_id = c.id
+                    WHERE u.azure_oid = :oid AND c.is_active = true
+                    ORDER BY e.enrolled_at DESC LIMIT 1
+                """),
+                {"oid": user.azure_oid},
+            )
+            course_row = course_result.first()
+            course_id = str(course_row[0]) if course_row else None
+
             await session.execute(
                 text("""
-                    INSERT INTO activity_logs (user_id, feature, action, duration_ms)
-                    SELECT u.id, :feature, :action, :duration
+                    INSERT INTO activity_logs (user_id, course_id, feature, action, duration_ms)
+                    SELECT u.id, CAST(:course_id AS uuid), :feature, :action, :duration
                     FROM users u WHERE u.azure_oid = :oid
                 """),
                 {
                     "oid": user.azure_oid,
+                    "course_id": course_id,
                     "feature": feature,
                     "action": f"{method} {path}",
                     "duration": duration_ms,

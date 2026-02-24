@@ -146,6 +146,32 @@ async def leave_course(
     return {"status": "ok"}
 
 
+@router.delete("/courses/{course_id}/leave")
+async def leave_course(
+    course_id: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    """Leave a course (student unenrolls themselves)."""
+    user = await _require_auth(request)
+
+    result = await db.execute(
+        text("""
+            DELETE FROM enrollments
+            WHERE course_id = :cid
+              AND user_id = (SELECT id FROM users WHERE azure_oid = :oid)
+            RETURNING id
+        """),
+        {"cid": course_id, "oid": user.azure_oid},
+    )
+    await db.commit()
+
+    if not result.first():
+        raise HTTPException(status_code=404, detail="Not enrolled in this course")
+
+    return {"status": "ok"}
+
+
 @router.get("/courses/{course_id}/students", response_model=list[StudentResponse])
 async def list_course_students(
     course_id: str,
@@ -209,6 +235,19 @@ async def remove_student(
     user = await _require_auth(request)
     if user.role not in ("professor", "admin"):
         raise HTTPException(status_code=403, detail="Professor access required")
+
+    # Verify professor owns this course (admins bypass)
+    if user.role == "professor":
+        ownership = await db.execute(
+            text("""
+                SELECT 1 FROM courses c
+                JOIN users u ON c.professor_id = u.id
+                WHERE c.id = :cid AND u.azure_oid = :oid
+            """),
+            {"cid": course_id, "oid": user.azure_oid},
+        )
+        if not ownership.first():
+            raise HTTPException(status_code=403, detail="Not your course")
 
     result = await db.execute(
         text("DELETE FROM enrollments WHERE user_id = :uid AND course_id = :cid RETURNING id"),

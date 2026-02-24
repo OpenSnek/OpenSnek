@@ -13,6 +13,7 @@ import {
   Plus,
   ArrowRight,
   Loader2,
+  LogOut,
   X,
 } from "lucide-react";
 import { useCourse, Course } from "@/context/CourseContext";
@@ -31,6 +32,27 @@ export default function CoursesPage() {
   const [enrollCode, setEnrollCode] = useState("");
   const [joinLoading, setJoinLoading] = useState(false);
   const [joinError, setJoinError] = useState("");
+  const [leavingCourseId, setLeavingCourseId] = useState<string | null>(null);
+
+  const handleLeaveCourse = async (e: React.MouseEvent, courseId: string) => {
+    e.stopPropagation();
+    if (!confirm("Are you sure you want to leave this course?")) return;
+    setLeavingCourseId(courseId);
+    try {
+      const res = await fetch(
+        apiUrl(`/api/v1/opensnek/courses/${courseId}/leave`),
+        { method: "DELETE", credentials: "include" },
+      );
+      if (res.ok) {
+        if (activeCourse?.id === courseId) setActiveCourse(null);
+        await refreshCourses();
+      }
+    } catch {
+      // Silently fail — course list will refresh next visit
+    } finally {
+      setLeavingCourseId(null);
+    }
+  };
 
   const handleSelectCourse = (course: Course) => {
     setActiveCourse(course);
@@ -143,7 +165,25 @@ export default function CoursesPage() {
                         </span>
                       )}
                     </div>
-                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-teal-500 transition-colors" />
+                    <div className="flex items-center gap-1">
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        title="Leave course"
+                        onClick={(e) => handleLeaveCourse(e, course.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleLeaveCourse(e as any, course.id);
+                        }}
+                        className="p-1 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-50 dark:hover:bg-red-900/30 transition-all"
+                      >
+                        {leavingCourseId === course.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-red-400" />
+                        ) : (
+                          <LogOut className="w-3.5 h-3.5 text-red-400 hover:text-red-500" />
+                        )}
+                      </span>
+                      <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-teal-500 transition-colors" />
+                    </div>
                   </div>
 
                   <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
