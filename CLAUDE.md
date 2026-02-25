@@ -59,7 +59,8 @@ OpenSnek/
 │   ├── main.yaml                # System config: ports, paths, tools, logging
 │   └── agents.yaml              # Agent LLM params: temperature, max_tokens per module
 ├── scripts/
-│   ├── setup_wizard.py          # ★ Interactive .env generator
+│   ├── setup_wizard.py          # ★ Interactive .env generator (Docker + bare-metal modes)
+│   ├── start.sh                 # ★ Bare-metal service launcher (port detection, Ollama, deps)
 │   ├── init_db.sql              # ★ PostgreSQL schema (applied on first Docker startup)
 │   ├── backup.sh                # ★ PostgreSQL dump + data archive
 │   └── restore.sh               # ★ Restore from backup
@@ -68,6 +69,7 @@ OpenSnek/
 ├── .env.example                 # All env vars documented
 ├── requirements.txt             # Python deps (87 packages)
 ├── OPENSNEK.md                  # User-facing documentation
+├── QUICKSTART.md                # Deployment quickstart (Docker + bare-metal)
 └── README.md                    # DeepTutor upstream docs
 ```
 
@@ -227,10 +229,18 @@ Three services in `docker-compose.yml`:
 
 ### Quick start (Docker)
 ```bash
-python3 scripts/setup_wizard.py   # Generate .env
+python3 scripts/setup_wizard.py   # Generate .env (choose Docker mode)
 docker compose up -d              # Start all services
 # Frontend: http://localhost:3782
 # API docs: http://localhost:8001/docs
+```
+
+### Quick start (bare-metal / GPU cloud)
+```bash
+python3 scripts/setup_wizard.py   # Generate .env (choose bare-metal mode)
+./scripts/start.sh                # Starts PostgreSQL check, Ollama, backend, frontend
+# Handles port conflicts, installs deps, builds frontend automatically
+# Stop with: ./scripts/start.sh --stop
 ```
 
 ### Local development (no Docker)
