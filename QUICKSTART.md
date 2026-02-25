@@ -2,10 +2,10 @@
 
 ## Prerequisites
 
-- Docker & Docker Compose
 - Python 3 (for setup wizard)
 - Azure AD App Registration ([instructions below](#azure-ad-setup))
-- An LLM API key (OpenAI, Anthropic, or local Ollama)
+- **Docker path**: Docker & Docker Compose
+- **Bare-metal path**: PostgreSQL 16, Node.js 22, Ollama (if using local LLM)
 
 ## 1. Configure
 
@@ -15,7 +15,9 @@ cd OpenSnek
 python3 scripts/setup_wizard.py
 ```
 
-The wizard generates `.env` with all settings. It will ask for your university name, Azure AD credentials, LLM provider, and embedding config. Database defaults work out of the box.
+The wizard asks for your deployment mode (Docker or bare-metal), university name, Azure AD credentials (skippable), and LLM provider. It generates `.env` with all settings.
+
+For Ollama users, the wizard defaults to **qwen3:30b-a3b** (recommended) with **nomic-embed-text** for embeddings.
 
 <details>
 <summary>Manual setup (skip wizard)</summary>
@@ -30,17 +32,23 @@ python3 -c "import secrets; print(secrets.token_urlsafe(32))"
 
 ## 2. Launch
 
+**Docker (recommended):**
 ```bash
 docker compose up -d
 ```
-
 Wait ~60s for startup. Check with `docker compose logs -f deeptutor`.
+
+**Bare-metal / GPU cloud:**
+```bash
+./scripts/start.sh
+```
+This automatically checks PostgreSQL, starts Ollama (if configured), installs dependencies, builds the frontend, and launches both services. It detects port conflicts and adapts automatically.
 
 | URL | What |
 |-----|------|
 | http://localhost:3782 | App (login, courses, AI features) |
 | http://localhost:3782/professor | Professor dashboard |
-| http://localhost:8001/docs | API docs |
+| http://localhost:8001/docs | API docs (port may differ on bare-metal) |
 
 ## 3. First login
 
@@ -51,7 +59,12 @@ Wait ~60s for startup. Check with `docker compose logs -f deeptutor`.
 ## 4. Make yourself professor
 
 ```bash
+# Docker:
 docker compose exec postgres psql -U opensnek opensnek \
+  -c "UPDATE users SET role = 'professor' WHERE email = 'you@university.edu';"
+
+# Bare-metal:
+psql -U opensnek opensnek \
   -c "UPDATE users SET role = 'professor' WHERE email = 'you@university.edu';"
 ```
 
@@ -95,44 +108,33 @@ Students click **Join Course**, enter the code, and gain access to the course KB
 
 ## Common Commands
 
+**Docker:**
 ```bash
 docker compose logs -f              # All logs
 docker compose up --build -d        # Rebuild after code changes
 docker compose down                 # Stop
 docker compose restart deeptutor    # Restart app only
-
-# Database shell
-docker compose exec postgres psql -U opensnek opensnek
-
-# Backup / restore
-./scripts/backup.sh
-./scripts/restore.sh ./backups/YYYYMMDD_HHMMSS
-
-# Make admin
-docker compose exec postgres psql -U opensnek opensnek \
-  -c "UPDATE users SET role = 'admin' WHERE email = 'admin@university.edu';"
+docker compose exec postgres psql -U opensnek opensnek  # DB shell
 ```
 
-## Local Development (no Docker for app)
-
+**Bare-metal:**
 ```bash
-# Terminal 1: PostgreSQL
-docker run -d --name opensnek-postgres \
-  -e POSTGRES_DB=opensnek -e POSTGRES_USER=opensnek -e POSTGRES_PASSWORD=opensnek_secret \
-  -p 5432:5432 -v ./scripts/init_db.sql:/docker-entrypoint-initdb.d/01_schema.sql \
-  postgres:16-alpine
+./scripts/start.sh                  # Start all services
+./scripts/start.sh --stop           # Stop all services
+./scripts/start.sh --status         # Check if running
+psql -U opensnek opensnek           # DB shell
+```
 
-# Terminal 2: Backend
-pip install -r requirements.txt
-python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8001 --reload
-
-# Terminal 3: Frontend
-cd web && npm install && npm run dev
+**Both:**
+```bash
+./scripts/backup.sh                                    # Backup
+./scripts/restore.sh ./backups/YYYYMMDD_HHMMSS         # Restore
 ```
 
 ## Gotchas
 
-- **DB schema only applies on first startup.** If you add tables later, apply them manually via `psql`.
+- **DB schema only applies on first startup.** If you add tables later, apply them manually via `psql`. The `start.sh` script does this automatically for bare-metal.
 - **`NEXTAUTH_SECRET` empty = OpenSnek disabled.** System runs as vanilla DeepTutor (no auth, no courses).
 - **Azure AD redirect URI must match exactly** — including port and path. No trailing slash.
 - **KB isolation is automatic.** Users only see KBs they created or are linked to their enrolled courses.
+- **Port conflicts:** `start.sh` auto-detects and uses the next available port. Docker uses the ports from `.env` directly.
