@@ -122,7 +122,7 @@ const getRecordLabel = (type: string) => {
 const getRecordColor = (type: string) => {
   switch (type) {
     case "solve":
-      return "text-blue-500 bg-blue-50 border-blue-200";
+      return "text-green-600 bg-green-50 border-green-200";
     case "question":
       return "text-purple-500 bg-purple-50 border-purple-200";
     case "research":
@@ -479,16 +479,16 @@ export default function NotebookPage() {
         }}
       >
         {/* Header */}
-        <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30">
+        <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              <BookOpen className="w-5 h-5 text-green-700 dark:text-[#8DBF5A]" />
               {t("Notebooks")}
             </h1>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all shadow-md shadow-indigo-500/20"
+                className="p-2 bg-[#1a6b3a] text-white rounded-lg hover:bg-[#155730] transition-all shadow-md shadow-indigo-500/20"
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -510,7 +510,7 @@ export default function NotebookPage() {
               placeholder={t("Search notebooks...")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none"
+              className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-[#8DBF5A]/20 focus:border-[#8DBF5A] outline-none"
             />
           </div>
         </div>
@@ -539,7 +539,7 @@ export default function NotebookPage() {
                   onClick={() => fetchNotebookDetail(nb.id)}
                   className={`p-3 rounded-xl cursor-pointer transition-all group ${
                     selectedNotebook?.id === nb.id
-                      ? "bg-indigo-50 dark:bg-indigo-900/30 border-2 border-indigo-200 dark:border-indigo-700"
+                      ? "bg-green-50 dark:bg-green-900/30 border-2 border-green-200 dark:border-green-700"
                       : "hover:bg-slate-50 dark:hover:bg-slate-700/50 border-2 border-transparent"
                   }`}
                 >
@@ -846,7 +846,7 @@ export default function NotebookPage() {
                 </button>
                 <button
                   onClick={openImportModal}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 rounded-lg transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-green-700 dark:text-[#8DBF5A] hover:text-indigo-700 dark:hover:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 rounded-lg transition-colors"
                   title={t("Import records from other notebooks")}
                 >
                   <Upload className="w-3.5 h-3.5" />
@@ -866,7 +866,7 @@ export default function NotebookPage() {
                 <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
                   {t("User Query")}
                 </h3>
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-100 dark:border-blue-800">
+                <div className="p-4 bg-green-50 dark:bg-green-900/30 rounded-xl border border-green-100 dark:border-green-800">
                   <p className="text-slate-700 dark:text-slate-200">
                     {selectedRecord.user_query}
                   </p>
@@ -954,7 +954,7 @@ export default function NotebookPage() {
                     }))
                   }
                   placeholder={t("My Notebook")}
-                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none"
+                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-[#8DBF5A]/20 focus:border-[#8DBF5A] outline-none"
                 />
               </div>
               <div>
@@ -971,7 +971,7 @@ export default function NotebookPage() {
                   }
                   placeholder={t("Notes about machine learning...")}
                   rows={3}
-                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none resize-none"
+                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-[#8DBF5A]/20 focus:border-[#8DBF5A] outline-none resize-none"
                 />
               </div>
               <div>
@@ -1006,7 +1006,7 @@ export default function NotebookPage() {
               <button
                 onClick={handleCreateNotebook}
                 disabled={!newNotebook.name.trim()}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 bg-[#1a6b3a] text-white rounded-lg hover:bg-[#155730] transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 {t("Create")}
@@ -1047,7 +1047,7 @@ export default function NotebookPage() {
                       prev ? { ...prev, name: e.target.value } : null,
                     )
                   }
-                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none"
+                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-[#8DBF5A]/20 focus:border-[#8DBF5A] outline-none"
                 />
               </div>
               <div>
@@ -1062,7 +1062,7 @@ export default function NotebookPage() {
                     )
                   }
                   rows={3}
-                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none resize-none"
+                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-[#8DBF5A]/20 focus:border-[#8DBF5A] outline-none resize-none"
                 />
               </div>
               <div>
@@ -1102,7 +1102,7 @@ export default function NotebookPage() {
               <button
                 onClick={handleUpdateNotebook}
                 disabled={!editingNotebook.name.trim()}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 bg-[#1a6b3a] text-white rounded-lg hover:bg-[#155730] transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 <Check className="w-4 h-4" />
                 {t("Save Changes")}
@@ -1154,7 +1154,7 @@ export default function NotebookPage() {
           <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-[500px] max-h-[80vh] flex flex-col animate-in zoom-in-95">
             <div className="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between shrink-0">
               <h3 className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                <Upload className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <Upload className="w-5 h-5 text-green-700 dark:text-[#8DBF5A]" />
                 {t("Import Records")}
               </h3>
               <button
@@ -1179,7 +1179,7 @@ export default function NotebookPage() {
                 <select
                   value={importSourceNotebook}
                   onChange={(e) => loadImportSourceRecords(e.target.value)}
-                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none"
+                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-[#8DBF5A]/20 focus:border-[#8DBF5A] outline-none"
                 >
                   <option value="">{t("Select a notebook...")}</option>
                   {availableNotebooks.map((nb) => (
@@ -1204,7 +1204,7 @@ export default function NotebookPage() {
                             new Set(importSourceRecords.map((r) => r.id)),
                           )
                         }
-                        className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                        className="text-xs text-green-700 dark:text-[#8DBF5A] hover:text-indigo-700 dark:hover:text-indigo-300"
                       >
                         Select All
                       </button>
@@ -1233,7 +1233,7 @@ export default function NotebookPage() {
                           onClick={() => toggleImportRecord(record.id)}
                           className={`p-3 rounded-xl cursor-pointer transition-all border ${
                             selectedImportRecords.has(record.id)
-                              ? "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-700"
+                              ? "bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700"
                               : "hover:bg-slate-50 dark:hover:bg-slate-700/50 border-slate-200 dark:border-slate-600"
                           }`}
                         >
@@ -1241,7 +1241,7 @@ export default function NotebookPage() {
                             <div
                               className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 ${
                                 selectedImportRecords.has(record.id)
-                                  ? "bg-indigo-500 border-indigo-500 text-white"
+                                  ? "bg-[#8DBF5A] border-[#8DBF5A] text-white"
                                   : "border-slate-300 dark:border-slate-500"
                               }`}
                             >
@@ -1288,7 +1288,7 @@ export default function NotebookPage() {
               <button
                 onClick={handleImportRecords}
                 disabled={selectedImportRecords.size === 0 || loadingImport}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-[#1a6b3a] text-white rounded-lg hover:bg-[#155730] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Upload className="w-4 h-4" />
                 Import{" "}

@@ -526,7 +526,7 @@ export const ResearchDashboard: React.FC<ResearchDashboardProps> = ({
         {isCompleted && reporting.generatedReport && (
           <button
             onClick={() => setActiveView("report")}
-            className="mt-6 flex items-center justify-center gap-2 w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors shadow-sm"
+            className="mt-6 flex items-center justify-center gap-2 w-full py-3 px-4 bg-[#1a6b3a] hover:bg-[#155730] text-white rounded-xl font-medium transition-colors shadow-sm"
           >
             <FileText className="w-4 h-4" />
             {t("View Full Report")}

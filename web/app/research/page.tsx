@@ -523,7 +523,7 @@ export default function ResearchPage() {
                   (state.global.stage !== "idle" &&
                     state.global.stage !== "completed")
                 }
-                className="p-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50"
+                className="p-2.5 bg-[#1a6b3a] text-white rounded-xl hover:bg-[#155730] disabled:opacity-50"
               >
                 {isOptimizing ? (
                   <Loader2 className="w-4 h-4 animate-spin" />

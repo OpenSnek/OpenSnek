@@ -327,7 +327,7 @@ export default function SolverPage() {
                 </>
               ) : (
                 <>
-                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/30">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8DBF5A] to-green-700 flex items-center justify-center shrink-0 shadow-lg shadow-green-700/30">
                     <Bot className="w-5 h-5 text-white" />
                   </div>
                   <div className="flex-1 bg-white dark:bg-slate-800 px-6 py-5 rounded-2xl rounded-tl-none border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden min-w-0 break-words">
@@ -439,7 +439,7 @@ export default function SolverPage() {
           {/* AI Thinking State */}
           {solverState.isSolving && (
             <div className="flex gap-4 w-full animate-in fade-in slide-in-from-bottom-2">
-              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/30">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8DBF5A] to-green-700 flex items-center justify-center shrink-0 shadow-lg shadow-green-700/30">
                 <Loader2 className="w-5 h-5 text-white animate-spin" />
               </div>
               <div className="flex flex-col gap-2 flex-1 min-w-0">
@@ -530,7 +530,7 @@ export default function SolverPage() {
           <div className="w-full relative">
             <input
               type="text"
-              className="w-full px-5 py-4 pr-32 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-700 dark:text-slate-200 shadow-inner"
+              className="w-full px-5 py-4 pr-32 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8DBF5A]/20 focus:border-[#8DBF5A] transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-700 dark:text-slate-200 shadow-inner"
               placeholder={t("Ask a difficult question...")}
               value={inputQuestion}
               onChange={(e) => setInputQuestion(e.target.value)}
@@ -541,7 +541,7 @@ export default function SolverPage() {
               <button
                 onClick={handleStart}
                 disabled={solverState.isSolving || !inputQuestion.trim()}
-                className="h-full aspect-square bg-blue-600 text-white rounded-lg flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 transition-all shadow-md shadow-blue-500/20"
+                className="h-full aspect-square bg-[#1a6b3a] text-white rounded-lg flex items-center justify-center hover:bg-[#155730] disabled:opacity-50 disabled:hover:bg-[#1a6b3a] transition-all shadow-md shadow-green-700/20"
               >
                 {solverState.isSolving ? (
                   <Loader2 className="w-5 h-5 animate-spin" />

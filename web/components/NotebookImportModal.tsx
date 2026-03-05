@@ -167,8 +167,8 @@ export default function NotebookImportModal({
         {/* Header */}
         <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <BookOpen className="w-5 h-5 text-blue-600" />
+            <div className="p-2 bg-green-100 rounded-lg">
+              <BookOpen className="w-5 h-5 text-green-700" />
             </div>
             <div>
               <h2 className="font-bold text-slate-900">{dialogTitle}</h2>
@@ -204,7 +204,7 @@ export default function NotebookImportModal({
                   onClick={() => toggleNotebook(nb.id)}
                   className={`p-3 rounded-xl cursor-pointer transition-all border ${
                     expandedNotebooks.has(nb.id)
-                      ? "bg-white border-blue-200 shadow-sm"
+                      ? "bg-white border-green-200 shadow-sm"
                       : "hover:bg-white border-transparent hover:border-slate-200"
                   }`}
                 >
@@ -275,16 +275,16 @@ export default function NotebookImportModal({
                               onClick={() => toggleRecordSelection(record)}
                               className={`p-3 rounded-xl border cursor-pointer transition-all group ${
                                 selectedRecords.has(record.id)
-                                  ? "bg-blue-50 border-blue-200 ring-1 ring-blue-200"
-                                  : "bg-white border-slate-200 hover:border-blue-200 hover:shadow-sm"
+                                  ? "bg-green-50 border-green-200 ring-1 ring-green-200"
+                                  : "bg-white border-slate-200 hover:border-green-200 hover:shadow-sm"
                               }`}
                             >
                               <div className="flex items-start gap-3">
                                 <div
                                   className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
                                     selectedRecords.has(record.id)
-                                      ? "bg-blue-500 border-blue-500 text-white"
-                                      : "border-slate-300 group-hover:border-blue-300"
+                                      ? "bg-[#8DBF5A] border-[#8DBF5A] text-white"
+                                      : "border-slate-300 group-hover:border-green-300"
                                   }`}
                                 >
                                   {selectedRecords.has(record.id) && (
@@ -343,7 +343,7 @@ export default function NotebookImportModal({
             <button
               onClick={handleImport}
               disabled={selectedRecords.size === 0}
-              className="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-2 text-sm font-bold text-white bg-[#1a6b3a] hover:bg-[#155730] rounded-lg shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               <Check className="w-4 h-4" />
               {t("Import Selected")}

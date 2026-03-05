@@ -103,7 +103,7 @@ export default function ChatPanel({
             <div
               className={`max-w-[90%] rounded-2xl px-4 py-3 text-sm ${
                 msg.role === "user"
-                  ? "bg-indigo-600 text-white rounded-tr-none shadow-md shadow-indigo-500/20"
+                  ? "bg-[#1a6b3a] text-white rounded-tr-none shadow-md shadow-green-700/20"
                   : msg.role === "system" && msg.content.includes("⏳")
                     ? "bg-amber-50 border border-amber-200 text-amber-900 rounded-tl-none"
                     : msg.role === "system"
@@ -147,7 +147,7 @@ export default function ChatPanel({
             <button
               onClick={handleSendMessage}
               disabled={!inputMessage.trim() || sendingMessage}
-              className="p-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20"
+              className="p-2.5 bg-[#1a6b3a] text-white rounded-xl hover:bg-[#155730] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-700/20"
             >
               {sendingMessage ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

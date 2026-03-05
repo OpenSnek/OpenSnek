@@ -303,10 +303,10 @@ interface GlobalContextType {
   newChatSession: () => void;
 
   // UI Settings
-  uiSettings: { theme: "light" | "dark"; language: "en" | "zh" };
+  uiSettings: { theme: "light" | "dark"; language: "en" | "nl" };
   refreshSettings: () => Promise<void>;
   updateTheme: (theme: "light" | "dark") => Promise<void>;
-  updateLanguage: (language: "en" | "zh") => Promise<void>;
+  updateLanguage: (language: "en" | "nl") => Promise<void>;
 
   // Sidebar
   sidebarWidth: number;
@@ -447,7 +447,7 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
   // --- UI Settings Logic ---
   const [uiSettings, setUiSettings] = useState<{
     theme: "light" | "dark";
-    language: "en" | "zh";
+    language: "en" | "nl";
   }>({ theme: "light", language: "en" });
 
   const [isInitialized, setIsInitialized] = useState(false);
@@ -482,7 +482,7 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
     const storedTheme = getStoredTheme();
     const storedLanguage =
       typeof window !== "undefined"
-        ? (localStorage.getItem(LANGUAGE_STORAGE_KEY) as "en" | "zh") || "en"
+        ? (localStorage.getItem(LANGUAGE_STORAGE_KEY) as "en" | "nl") || "en"
         : "en";
 
     const themeToUse = storedTheme || "light";
@@ -510,7 +510,7 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const updateLanguage = async (newLanguage: "en" | "zh") => {
+  const updateLanguage = async (newLanguage: "en" | "nl") => {
     // Update UI immediately
     setUiSettings((prev) => ({ ...prev, language: newLanguage }));
     if (typeof window !== "undefined") {
@@ -536,7 +536,7 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
       const initialTheme = initializeTheme();
       const storedLanguage =
         typeof window !== "undefined"
-          ? (localStorage.getItem(LANGUAGE_STORAGE_KEY) as "en" | "zh") || "en"
+          ? (localStorage.getItem(LANGUAGE_STORAGE_KEY) as "en" | "nl") || "en"
           : "en";
 
       setUiSettings({

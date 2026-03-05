@@ -360,13 +360,13 @@ export default function KnowledgePage() {
       case "pdf":
         return <FileText className="w-4 h-4 text-red-500" />;
       case "md":
-        return <FileText className="w-4 h-4 text-blue-500" />;
+        return <FileText className="w-4 h-4 text-green-600" />;
       case "txt":
         return <FileText className="w-4 h-4 text-slate-500" />;
       case "doc":
       case "docx":
       case "rtf":
-        return <FileText className="w-4 h-4 text-blue-600" />;
+        return <FileText className="w-4 h-4 text-green-700" />;
       case "html":
       case "htm":
       case "xml":
@@ -954,7 +954,7 @@ export default function KnowledgePage() {
       <div className="flex justify-between items-end mb-8">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight flex items-center gap-3">
-            <BookOpen className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            <BookOpen className="w-8 h-8 text-green-700 dark:text-blue-400" />
             {t("Knowledge Bases")}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2">
@@ -1020,7 +1020,7 @@ export default function KnowledgePage() {
               <div className="p-6 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-start">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-white dark:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-600 flex items-center justify-center shadow-sm">
-                    <Database className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+                    <Database className="w-5 h-5 text-green-600 dark:text-blue-400" />
                   </div>
                   <div>
                     <h3 className="font-bold text-slate-900 dark:text-slate-100">
@@ -1028,7 +1028,7 @@ export default function KnowledgePage() {
                     </h3>
                     <div className="flex items-center gap-1.5 mt-1">
                       {kb.is_default && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wide border border-blue-100 dark:border-blue-800">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/40 text-green-700 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wide border border-green-100 dark:border-green-800">
                           {t("Default")}
                         </span>
                       )}
@@ -1095,7 +1095,7 @@ export default function KnowledgePage() {
                       );
                       setUploadModalOpen(true);
                     }}
-                    className="p-2 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    className="p-2 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-slate-500 dark:text-slate-400 hover:text-green-700 dark:hover:text-blue-400 transition-colors"
                     title={t("Upload Documents")}
                   >
                     <Upload className="w-4 h-4" />
@@ -1179,7 +1179,7 @@ export default function KnowledgePage() {
                         const percent =
                           progress?.percent ?? progress?.progress_percent ?? 0;
                         return (
-                          <span className="text-blue-600 dark:text-blue-400 font-bold flex items-center gap-1">
+                          <span className="text-green-700 dark:text-blue-400 font-bold flex items-center gap-1">
                             <Loader2 className="w-3 h-3 animate-spin" />
                             {stageLabel} {percent}%
                           </span>
@@ -1214,7 +1214,7 @@ export default function KnowledgePage() {
                       ) {
                         const percent =
                           progress?.percent ?? progress?.progress_percent ?? 0;
-                        let bgColor = "bg-blue-500";
+                        let bgColor = "bg-[#8DBF5A]";
                         if (
                           status === "ready" ||
                           progress?.stage === "completed"
@@ -1371,7 +1371,7 @@ export default function KnowledgePage() {
                   value={newKbName}
                   onChange={(e) => setNewKbName(e.target.value)}
                   placeholder={t("e.g., Math101")}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#8DBF5A]/20 focus:border-[#8DBF5A] transition-all"
                 />
               </div>
 
@@ -1382,7 +1382,7 @@ export default function KnowledgePage() {
                 <select
                   value={ragProvider}
                   onChange={(e) => setRagProvider(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#8DBF5A]/20 focus:border-[#8DBF5A] transition-all"
                 >
                   {ragProviders.length > 0 ? (
                     ragProviders.map((provider) => (
@@ -1438,8 +1438,8 @@ export default function KnowledgePage() {
                 <div
                   className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
                     dragActive
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30"
-                      : "border-slate-200 dark:border-slate-600 hover:border-blue-400 dark:hover:border-blue-500 bg-slate-50 dark:bg-slate-700/50"
+                      ? "border-[#8DBF5A] bg-green-50 dark:bg-green-900/30"
+                      : "border-slate-200 dark:border-slate-600 hover:border-[#8DBF5A] dark:hover:border-[#8DBF5A] bg-slate-50 dark:bg-slate-700/50"
                   }`}
                   onDragEnter={handleDrag}
                   onDragLeave={handleDrag}
@@ -1469,7 +1469,7 @@ export default function KnowledgePage() {
                     className={`cursor-pointer flex flex-col items-center gap-2 ${uploadFiles.length > 0 ? "p-4" : "p-8"}`}
                   >
                     <Upload
-                      className={`w-6 h-6 ${dragActive ? "text-blue-500 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`}
+                      className={`w-6 h-6 ${dragActive ? "text-green-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`}
                     />
                     <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
                       {uploadFiles.length > 0
@@ -1621,8 +1621,8 @@ export default function KnowledgePage() {
               <div
                 className={`border-2 border-dashed rounded-xl transition-colors ${
                   dragActive
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30"
-                    : "border-slate-200 dark:border-slate-600 hover:border-blue-400 dark:hover:border-blue-500 bg-slate-50 dark:bg-slate-700/50"
+                    ? "border-[#8DBF5A] bg-green-50 dark:bg-green-900/30"
+                    : "border-slate-200 dark:border-slate-600 hover:border-[#8DBF5A] dark:hover:border-[#8DBF5A] bg-slate-50 dark:bg-slate-700/50"
                 }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
@@ -1652,7 +1652,7 @@ export default function KnowledgePage() {
                   className={`cursor-pointer flex flex-col items-center gap-2 ${uploadFiles.length > 0 ? "p-4" : "p-8"}`}
                 >
                   <Upload
-                    className={`w-6 h-6 ${dragActive ? "text-blue-500 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`}
+                    className={`w-6 h-6 ${dragActive ? "text-green-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`}
                   />
                   <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
                     {uploadFiles.length > 0
@@ -1733,7 +1733,7 @@ export default function KnowledgePage() {
                 <button
                   type="submit"
                   disabled={uploadFiles.length === 0 || uploading}
-                  className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 py-2.5 rounded-xl bg-[#1a6b3a] text-white font-medium hover:bg-[#155730] disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {uploading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

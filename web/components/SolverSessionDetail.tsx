@@ -164,7 +164,7 @@ export default function SolverSessionDetail({
                 <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
                   <Clock className="w-3 h-3" />
                   {new Date(session.created_at * 1000).toLocaleString(
-                    uiSettings.language === "zh" ? "zh-CN" : "en-US",
+                    uiSettings.language === "nl" ? "nl-NL" : "en-US",
                   )}
                   <span className="mx-1">•</span>
                   {session.messages.length} {t("messages")}
@@ -298,7 +298,7 @@ export default function SolverSessionDetail({
                         }`}
                       >
                         {new Date(msg.timestamp * 1000).toLocaleTimeString(
-                          uiSettings.language === "zh" ? "zh-CN" : "en-US",
+                          uiSettings.language === "nl" ? "nl-NL" : "en-US",
                           { hour: "2-digit", minute: "2-digit" },
                         )}
                       </p>
@@ -325,7 +325,7 @@ export default function SolverSessionDetail({
           </button>
           <button
             onClick={onContinue}
-            className="px-6 py-2.5 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition-colors flex items-center gap-2"
+            className="px-6 py-2.5 bg-[#1a6b3a] text-white rounded-xl font-medium hover:bg-[#155730] transition-colors flex items-center gap-2"
           >
             <Calculator className="w-4 h-4" />
             {t("Continue")}

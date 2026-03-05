@@ -155,9 +155,9 @@ export default function AddToNotebookModal({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-in fade-in">
       <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-[480px] max-h-[80vh] flex flex-col animate-in zoom-in-95">
         {/* Header */}
-        <div className="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-t-2xl">
+        <div className="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 rounded-t-2xl">
           <h3 className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <Book className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <Book className="w-5 h-5 text-green-700 dark:text-[#8DBF5A]" />
             {t("Add to Notebook")}
           </h3>
           <button
@@ -188,7 +188,7 @@ export default function AddToNotebookModal({
             </div>
           ) : loading ? (
             <div className="py-12 text-center">
-              <Loader2 className="w-8 h-8 text-indigo-600 dark:text-indigo-400 animate-spin mx-auto mb-2" />
+              <Loader2 className="w-8 h-8 text-green-700 dark:text-[#8DBF5A] animate-spin mx-auto mb-2" />
               <p className="text-slate-500 dark:text-slate-400">
                 {t("Loading notebooks...")}
               </p>
@@ -216,7 +216,7 @@ export default function AddToNotebookModal({
                   </label>
                   <button
                     onClick={() => setShowCreateForm(!showCreateForm)}
-                    className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1"
+                    className="text-xs text-green-700 dark:text-[#8DBF5A] hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1"
                   >
                     <Plus className="w-3 h-3" />
                     {t("New Notebook")}
@@ -225,7 +225,7 @@ export default function AddToNotebookModal({
 
                 {/* Create New Notebook Form */}
                 {showCreateForm && (
-                  <div className="mb-3 p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl border border-indigo-100 dark:border-indigo-800 animate-in slide-in-from-top-2">
+                  <div className="mb-3 p-3 bg-green-50 dark:bg-green-900/30 rounded-xl border border-green-100 dark:border-green-800 animate-in slide-in-from-top-2">
                     <input
                       type="text"
                       value={newNotebook.name}
@@ -236,7 +236,7 @@ export default function AddToNotebookModal({
                         }))
                       }
                       placeholder={t("Notebook name")}
-                      className="w-full px-3 py-2 mb-2 border border-indigo-200 dark:border-indigo-700 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
+                      className="w-full px-3 py-2 mb-2 border border-indigo-200 dark:border-indigo-700 rounded-lg text-sm focus:ring-2 focus:ring-[#8DBF5A]/20 focus:border-[#8DBF5A] outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                       autoFocus
                     />
                     <div className="flex items-center gap-2 mb-2">
@@ -270,7 +270,7 @@ export default function AddToNotebookModal({
                       <button
                         onClick={handleCreateNotebook}
                         disabled={!newNotebook.name.trim()}
-                        className="px-3 py-1.5 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-1"
+                        className="px-3 py-1.5 text-xs bg-[#1a6b3a] text-white rounded-lg hover:bg-[#155730] disabled:opacity-50 flex items-center gap-1"
                       >
                         <Plus className="w-3 h-3" />
                         {t("Create")}
@@ -298,8 +298,8 @@ export default function AddToNotebookModal({
                         onClick={() => toggleNotebook(nb.id)}
                         className={`w-full p-3 rounded-xl flex items-center gap-3 transition-all border-2 text-left ${
                           selectedIds.includes(nb.id)
-                            ? "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-300 dark:border-indigo-700"
-                            : "bg-white dark:bg-slate-700/50 border-slate-200 dark:border-slate-600 hover:border-indigo-200 dark:hover:border-indigo-700 hover:bg-slate-50 dark:hover:bg-slate-700"
+                            ? "bg-green-50 dark:bg-green-900/30 border-green-300 dark:border-green-700"
+                            : "bg-white dark:bg-slate-700/50 border-slate-200 dark:border-slate-600 hover:border-green-200 dark:hover:border-green-700 hover:bg-slate-50 dark:hover:bg-slate-700"
                         }`}
                       >
                         <div
@@ -322,7 +322,7 @@ export default function AddToNotebookModal({
                         <div
                           className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
                             selectedIds.includes(nb.id)
-                              ? "bg-indigo-600 border-indigo-600"
+                              ? "bg-[#8DBF5A] border-[#8DBF5A]"
                               : "border-slate-300 dark:border-slate-500"
                           }`}
                         >
@@ -361,7 +361,7 @@ export default function AddToNotebookModal({
               <button
                 onClick={handleSave}
                 disabled={selectedIds.length === 0 || saving}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 text-sm flex items-center gap-2"
+                className="px-4 py-2 bg-[#1a6b3a] text-white rounded-lg hover:bg-[#155730] transition-colors disabled:opacity-50 text-sm flex items-center gap-2"
               >
                 {saving ? (
                   <>

@@ -118,7 +118,7 @@ export default function ConfigTab({
   if (loading) {
     return (
       <div className="p-8 flex justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+        <Loader2 className="w-6 h-6 animate-spin text-[#8DBF5A]" />
       </div>
     );
   }
@@ -137,7 +137,7 @@ export default function ConfigTab({
         </div>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#1a6b3a] hover:bg-[#155730] text-white rounded-lg text-sm font-medium transition-colors"
         >
           <Plus className="w-4 h-4" />
           {t("Add Configuration")}
@@ -186,14 +186,14 @@ export default function ConfigTab({
             key={config.id}
             className={`p-4 rounded-xl border transition-all ${
               config.is_active
-                ? "border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/20"
+                ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20"
                 : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50"
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {config.is_active && (
-                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                  <div className="w-2 h-2 rounded-full bg-[#8DBF5A]" />
                 )}
                 <div>
                   <div className="flex items-center gap-2">
@@ -206,7 +206,7 @@ export default function ConfigTab({
                       </span>
                     )}
                     {config.is_active && (
-                      <span className="px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 rounded">
+                      <span className="px-2 py-0.5 text-xs bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 rounded">
                         {t("Active")}
                       </span>
                     )}
@@ -237,7 +237,7 @@ export default function ConfigTab({
                 {!config.is_active && (
                   <button
                     onClick={() => setActive(config.id)}
-                    className="px-3 py-1.5 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                    className="px-3 py-1.5 text-sm text-green-700 dark:text-[#8DBF5A] hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors"
                   >
                     {t("Set Active")}
                   </button>

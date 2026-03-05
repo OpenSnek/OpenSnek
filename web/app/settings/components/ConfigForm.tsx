@@ -240,7 +240,7 @@ export default function ConfigForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="mb-6 p-4 rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20"
+      className="mb-6 p-4 rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20"
     >
       <h3 className="font-medium text-slate-900 dark:text-slate-100 mb-4">
         {isEditMode
@@ -278,7 +278,7 @@ export default function ConfigForm({
             onChange={(e) => setName(e.target.value)}
             required
             placeholder={t("My Configuration")}
-            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-[#8DBF5A]/30 focus:border-[#8DBF5A]"
           />
         </div>
 
@@ -291,7 +291,7 @@ export default function ConfigForm({
             <select
               value={provider}
               onChange={(e) => handleProviderChange(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sm appearance-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sm appearance-none focus:ring-2 focus:ring-[#8DBF5A]/30 focus:border-[#8DBF5A]"
             >
               {PROVIDER_OPTIONS[configType].map((p) => (
                 <option key={p} value={p}>
@@ -310,7 +310,7 @@ export default function ConfigForm({
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               {t("Base URL")}
               {useEnvBaseUrl && (
-                <span className="ml-2 text-xs font-normal text-blue-500">
+                <span className="ml-2 text-xs font-normal text-green-600">
                   (using ${getEnvVarForBaseUrl(configType)})
                 </span>
               )}
@@ -327,9 +327,9 @@ export default function ConfigForm({
                       ? `Using ${getEnvVarForBaseUrl(configType)} from .env`
                       : "https://api.openai.com/v1"
                   }
-                  className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-[#8DBF5A]/30 focus:border-[#8DBF5A] ${
                     useEnvBaseUrl
-                      ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 italic"
+                      ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-[#8DBF5A] italic"
                       : "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600"
                   }`}
                 />
@@ -342,7 +342,7 @@ export default function ConfigForm({
                     setUseEnvBaseUrl(e.target.checked);
                     if (e.target.checked) setBaseUrl("");
                   }}
-                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-slate-300 text-green-600 focus:ring-[#8DBF5A]/30"
                 />
                 {t("Use .env")}
               </label>
@@ -359,7 +359,7 @@ export default function ConfigForm({
                 ({t("optional for local providers")})
               </span>
             ) : useEnvApiKey ? (
-              <span className="ml-2 text-xs font-normal text-blue-500">
+              <span className="ml-2 text-xs font-normal text-green-600">
                 (using ${getEnvVarForApiKey(configType)})
               </span>
             ) : null}
@@ -378,9 +378,9 @@ export default function ConfigForm({
                       ? `Using ${getEnvVarForApiKey(configType)} from .env`
                       : "sk-..."
                 }
-                className={`w-full px-3 py-2 pr-10 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full px-3 py-2 pr-10 border rounded-lg text-sm focus:ring-2 focus:ring-[#8DBF5A]/30 focus:border-[#8DBF5A] ${
                   useEnvApiKey
-                    ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 italic"
+                    ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-[#8DBF5A] italic"
                     : "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600"
                 }`}
               />
@@ -407,7 +407,7 @@ export default function ConfigForm({
                     setUseEnvApiKey(e.target.checked);
                     if (e.target.checked) setApiKey("");
                   }}
-                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-slate-300 text-green-600 focus:ring-[#8DBF5A]/30"
                 />
                 {t("Use .env")}
               </label>
@@ -427,7 +427,7 @@ export default function ConfigForm({
               onChange={(e) => setModel(e.target.value)}
               required
               placeholder={t("gpt-4o")}
-              className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-[#8DBF5A]/30 focus:border-[#8DBF5A]"
             />
           </div>
         )}
@@ -442,7 +442,7 @@ export default function ConfigForm({
               type="number"
               value={Number.isNaN(dimensions) ? "" : dimensions}
               onChange={(e) => setDimensions(parseInt(e.target.value, 10))}
-              className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-[#8DBF5A]/30 focus:border-[#8DBF5A]"
             />
           </div>
         )}
@@ -457,7 +457,7 @@ export default function ConfigForm({
               <select
                 value={voice}
                 onChange={(e) => setVoice(e.target.value)}
-                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sm appearance-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sm appearance-none focus:ring-2 focus:ring-[#8DBF5A]/30 focus:border-[#8DBF5A]"
               >
                 {VOICE_OPTIONS.map((v) => (
                   <option key={v} value={v}>
@@ -502,7 +502,7 @@ export default function ConfigForm({
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#1a6b3a] hover:bg-[#155730] disabled:bg-green-300 text-white rounded-lg text-sm font-medium transition-colors"
           >
             {saving ? (
               <Loader2 className="w-4 h-4 animate-spin" />

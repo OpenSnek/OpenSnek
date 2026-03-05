@@ -54,7 +54,7 @@ export default function ProgressPanel({
           <button
             onClick={onStartLearning}
             disabled={isLoading}
-            className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm font-medium"
+            className="flex-1 px-4 py-2 bg-[#1a6b3a] text-white rounded-lg hover:bg-[#155730] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm font-medium"
           >
             {isLoading ? (
               <>

@@ -5,7 +5,7 @@ import { ConfigType } from "./types";
 // Language options
 export const LANGUAGE_OPTIONS = [
   { value: "en" as const, label: "English" },
-  { value: "zh" as const, label: "中文" },
+  { value: "nl" as const, label: "Nederlands" },
 ];
 
 // Provider options - Cloud services first, then local deployments

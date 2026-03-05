@@ -249,7 +249,7 @@ export default function HistoryPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight flex items-center gap-3">
-              <History className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              <History className="w-8 h-8 text-green-700 dark:text-[#8DBF5A]" />
               {t("History")}
             </h1>
             <p className="text-slate-500 dark:text-slate-400 mt-2">
@@ -268,7 +268,7 @@ export default function HistoryPage() {
               placeholder={`${t("Search")}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 dark:text-slate-100"
+              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8DBF5A]/20 focus:border-[#8DBF5A] text-slate-900 dark:text-slate-100"
             />
             {searchQuery && (
               <button
@@ -314,7 +314,7 @@ export default function HistoryPage() {
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
           {loading ? (
             <div className="p-12 text-center text-slate-400 dark:text-slate-500">
-              <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <div className="w-8 h-8 border-2 border-[#8DBF5A] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
               {t("Loading")}...
             </div>
           ) : filteredEntries.length === 0 &&

@@ -266,7 +266,7 @@ export default function Sidebar() {
               {/* Collapse button */}
               <button
                 onClick={toggleSidebar}
-                className="text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors"
+                className="text-slate-400 hover:text-green-600 dark:hover:text-[#8DBF5A] p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors"
                 title={t("Collapse sidebar")}
               >
                 <ChevronsLeft className="w-4 h-4" />
@@ -308,8 +308,8 @@ export default function Sidebar() {
                 <Library
                   className={`w-5 h-5 flex-shrink-0 transition-colors ${
                     activeCourse
-                      ? "text-blue-500 dark:text-blue-400"
-                      : "text-slate-400 dark:text-slate-500 group-hover:text-blue-500 dark:group-hover:text-blue-400"
+                      ? "text-green-600 dark:text-[#8DBF5A]"
+                      : "text-slate-400 dark:text-slate-500 group-hover:text-green-600 dark:group-hover:text-[#8DBF5A]"
                   }`}
                 />
               </button>
@@ -319,15 +319,15 @@ export default function Sidebar() {
                 onClick={() => setShowCourseDropdown(!showCourseDropdown)}
                 className={`group w-full flex items-center rounded-md border transition-all duration-200 gap-2.5 pl-2 pr-1.5 py-2 ${
                   activeCourse
-                    ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm border-slate-100 dark:border-slate-600"
-                    : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 hover:shadow-sm border-transparent hover:border-slate-100 dark:hover:border-slate-600"
+                    ? "bg-white dark:bg-slate-700 text-green-700 dark:text-[#8DBF5A] shadow-sm border-slate-100 dark:border-slate-600"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-green-700 dark:hover:text-[#8DBF5A] hover:shadow-sm border-transparent hover:border-slate-100 dark:hover:border-slate-600"
                 }`}
               >
                 <Library
                   className={`w-5 h-5 flex-shrink-0 transition-colors ${
                     activeCourse
-                      ? "text-blue-500 dark:text-blue-400"
-                      : "text-slate-400 dark:text-slate-500 group-hover:text-blue-500 dark:group-hover:text-blue-400"
+                      ? "text-green-600 dark:text-[#8DBF5A]"
+                      : "text-slate-400 dark:text-slate-500 group-hover:text-green-600 dark:group-hover:text-[#8DBF5A]"
                   }`}
                 />
                 <span className="font-medium text-sm whitespace-nowrap flex-1 truncate text-left">
@@ -364,7 +364,7 @@ export default function Sidebar() {
                     }}
                     className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${
                       activeCourse?.id === c.id
-                        ? "text-blue-600 dark:text-blue-400 font-medium bg-blue-50/50 dark:bg-blue-900/10"
+                        ? "text-green-700 dark:text-[#8DBF5A] font-medium bg-green-50/50 dark:bg-green-900/10"
                         : "text-slate-700 dark:text-slate-300"
                     }`}
                   >
@@ -377,7 +377,7 @@ export default function Sidebar() {
                 <Link
                   href="/courses"
                   onClick={() => setShowCourseDropdown(false)}
-                  className="w-full text-left px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-700 border-t border-slate-100 dark:border-slate-700 flex items-center gap-1.5 font-medium transition-colors"
+                  className="w-full text-left px-3 py-2 text-sm text-green-700 dark:text-[#8DBF5A] hover:bg-slate-50 dark:hover:bg-slate-700 border-t border-slate-100 dark:border-slate-700 flex items-center gap-1.5 font-medium transition-colors"
                 >
                   <BookOpen className="w-3.5 h-3.5" />
                   {t("All Courses")}
@@ -431,7 +431,7 @@ export default function Sidebar() {
                     }
                     onDragEnd={handleDragEnd}
                     className={`group relative ${isDragging ? "opacity-50" : ""} ${
-                      isDragOver ? "border-t-2 border-blue-500" : ""
+                      isDragOver ? "border-t-2 border-[#8DBF5A]" : ""
                     }`}
                   >
                     <Link
@@ -442,8 +442,8 @@ export default function Sidebar() {
                           : "gap-2.5 pl-2 pr-1.5 py-2"
                       } ${
                         isActive
-                          ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm border-slate-100 dark:border-slate-600"
-                          : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 hover:shadow-sm border-transparent hover:border-slate-100 dark:hover:border-slate-600"
+                          ? "bg-white dark:bg-slate-700 text-green-700 dark:text-[#8DBF5A] shadow-sm border-slate-100 dark:border-slate-600"
+                          : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-green-700 dark:hover:text-[#8DBF5A] hover:shadow-sm border-transparent hover:border-slate-100 dark:hover:border-slate-600"
                       }`}
                       onMouseEnter={() =>
                         sidebarCollapsed && setShowTooltip(item.href)
@@ -453,8 +453,8 @@ export default function Sidebar() {
                       <item.icon
                         className={`w-5 h-5 flex-shrink-0 transition-colors ${
                           isActive
-                            ? "text-blue-500 dark:text-blue-400"
-                            : "text-slate-400 dark:text-slate-500 group-hover:text-blue-500 dark:group-hover:text-blue-400"
+                            ? "text-green-600 dark:text-[#8DBF5A]"
+                            : "text-slate-400 dark:text-slate-500 group-hover:text-green-600 dark:group-hover:text-[#8DBF5A]"
                         }`}
                       />
                       <span
@@ -514,7 +514,7 @@ export default function Sidebar() {
                     : "gap-2.5 pl-2 pr-1.5 py-2"
                 } ${
                   pathname.startsWith("/professor")
-                    ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm border-slate-100 dark:border-slate-600"
+                    ? "bg-white dark:bg-slate-700 text-green-700 dark:text-[#8DBF5A] shadow-sm border-slate-100 dark:border-slate-600"
                     : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 border-transparent"
                 }`}
                 onMouseEnter={() =>
@@ -525,7 +525,7 @@ export default function Sidebar() {
                 <LayoutDashboard
                   className={`w-5 h-5 flex-shrink-0 transition-colors ${
                     pathname.startsWith("/professor")
-                      ? "text-blue-500 dark:text-blue-400"
+                      ? "text-green-600 dark:text-[#8DBF5A]"
                       : "text-slate-400 dark:text-slate-500"
                   }`}
                 />
@@ -557,7 +557,7 @@ export default function Sidebar() {
                 : "gap-2.5 pl-2 pr-1.5 py-2"
             } ${
               pathname === "/settings"
-                ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-100 dark:border-slate-600"
+                ? "bg-white dark:bg-slate-700 text-green-700 dark:text-[#8DBF5A] shadow-sm border border-slate-100 dark:border-slate-600"
                 : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 border border-transparent"
             }`}
             onMouseEnter={() => sidebarCollapsed && setShowTooltip("/settings")}
@@ -566,7 +566,7 @@ export default function Sidebar() {
             <Settings
               className={`w-5 h-5 flex-shrink-0 transition-colors ${
                 pathname === "/settings"
-                  ? "text-blue-500 dark:text-blue-400"
+                  ? "text-green-600 dark:text-[#8DBF5A]"
                   : "text-slate-400 dark:text-slate-500"
               }`}
             />
@@ -627,7 +627,7 @@ export default function Sidebar() {
         {/* Expand/Collapse button at bottom */}
         <button
           onClick={toggleSidebar}
-          className={`w-full mt-1 flex items-center rounded-md text-slate-400 dark:text-slate-500 hover:bg-white dark:hover:bg-slate-700 hover:text-blue-500 dark:hover:text-blue-400 hover:shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-slate-600 transition-all duration-200 ${
+          className={`w-full mt-1 flex items-center rounded-md text-slate-400 dark:text-slate-500 hover:bg-white dark:hover:bg-slate-700 hover:text-green-600 dark:hover:text-[#8DBF5A] hover:shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-slate-600 transition-all duration-200 ${
             sidebarCollapsed ? "justify-center p-2" : "gap-2.5 pl-2 pr-1.5 py-2"
           }`}
           title={sidebarCollapsed ? t("Expand sidebar") : t("Collapse sidebar")}
