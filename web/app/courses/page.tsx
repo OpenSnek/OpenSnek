@@ -1,9 +1,5 @@
 "use client";
 
-/**
- * Course selection page — students see enrolled courses and can join new ones.
- */
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -15,6 +11,7 @@ import {
   Loader2,
   LogOut,
   X,
+  Library,
 } from "lucide-react";
 import { useCourse, Course } from "@/context/CourseContext";
 import { useAuth } from "@/context/AuthContext";
@@ -56,7 +53,6 @@ export default function CoursesPage() {
 
   const handleSelectCourse = (course: Course) => {
     setActiveCourse(course);
-    // Sync KB to GlobalContext
     if (course.kb_name) {
       setChatState((prev) => ({ ...prev, selectedKb: course.kb_name! }));
     }
@@ -67,7 +63,6 @@ export default function CoursesPage() {
     if (!enrollCode.trim()) return;
     setJoinLoading(true);
     setJoinError("");
-
     try {
       const res = await fetch(apiUrl("/api/v1/opensnek/enroll"), {
         method: "POST",
@@ -75,7 +70,6 @@ export default function CoursesPage() {
         credentials: "include",
         body: JSON.stringify({ enrollment_code: enrollCode.trim() }),
       });
-
       if (res.ok) {
         setShowJoinModal(false);
         setEnrollCode("");
@@ -92,158 +86,218 @@ export default function CoursesPage() {
   };
 
   return (
-    <div className="h-screen flex flex-col animate-fade-in">
-      <div className="flex-1 overflow-y-auto px-6 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-                My Courses
-              </h1>
-              <p className="text-slate-500 dark:text-slate-400 mt-1">
-                Welcome back, {user?.name || "Student"}
-              </p>
+    <div className="h-screen flex flex-col animate-fade-in p-6">
+      {/* Header */}
+      <div className="shrink-0 pb-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight flex items-center gap-3">
+              <Library className="w-8 h-8" style={{ color: "#8DBF5A" }} />
+              My Courses
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-2">
+              Welcome back, {user?.name || "Student"}
+            </p>
+          </div>
+          <button
+            onClick={() => setShowJoinModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 text-white font-medium rounded-xl transition-all shadow-sm text-sm active:scale-[0.98]"
+            style={{ backgroundColor: "#8DBF5A" }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "#7aaa4a")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "#8DBF5A")
+            }
+          >
+            <Plus className="w-4 h-4" />
+            Join Course
+          </button>
+        </div>
+      </div>
+
+      {/* Scrollable content */}
+      <div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-4">
+        {/* Loading */}
+        {isLoading && (
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-12 text-center">
+            <div
+              className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+              style={{ borderColor: "#8DBF5A", borderTopColor: "transparent" }}
+            />
+            Loading...
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!isLoading && courses.length === 0 && (
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-12 text-center">
+            <div className="w-16 h-16 bg-slate-50 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Library className="w-8 h-8 text-slate-300 dark:text-slate-500" />
             </div>
+            <p className="text-slate-500 dark:text-slate-400 font-medium">
+              No courses yet
+            </p>
+            <p className="text-sm text-slate-400 dark:text-slate-500 mt-1 mb-6">
+              Join a course using an enrollment code from your professor.
+            </p>
             <button
               onClick={() => setShowJoinModal(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-medium transition-colors shadow-lg shadow-teal-600/20"
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-white font-medium rounded-xl transition-colors text-sm"
+              style={{ backgroundColor: "#8DBF5A" }}
             >
               <Plus className="w-4 h-4" />
               Join Course
             </button>
           </div>
+        )}
 
-          {/* Loading */}
-          {isLoading && (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-6 h-6 animate-spin text-teal-500" />
-            </div>
-          )}
-
-          {/* Empty state */}
-          {!isLoading && courses.length === 0 && (
-            <div className="text-center py-20">
-              <BookOpen className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-              <h2 className="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                No courses yet
+        {/* Course list */}
+        {!isLoading && courses.length > 0 && (
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center gap-2">
+              <Library className="w-5 h-5" style={{ color: "#8DBF5A" }} />
+              <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+                Enrolled Courses
               </h2>
-              <p className="text-slate-500 dark:text-slate-400 mb-6">
-                Join a course using an enrollment code from your professor.
-              </p>
-              <button
-                onClick={() => setShowJoinModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-medium transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Join Course
-              </button>
+              <span className="text-xs text-slate-400 ml-auto">
+                {courses.length} {courses.length === 1 ? "course" : "courses"}
+              </span>
             </div>
-          )}
 
-          {/* Course grid */}
-          {!isLoading && courses.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="divide-y divide-slate-100 dark:divide-slate-700">
               {courses.map((course) => (
-                <button
+                <div
                   key={course.id}
                   onClick={() => handleSelectCourse(course)}
-                  className={`group text-left p-6 rounded-2xl border transition-all hover:shadow-lg ${
+                  className={`px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group cursor-pointer ${
                     activeCourse?.id === course.id
-                      ? "border-teal-300 dark:border-teal-600 bg-teal-50 dark:bg-teal-900/20 shadow-md"
-                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-teal-200 dark:hover:border-teal-700"
+                      ? "bg-green-50/50 dark:bg-green-900/10"
+                      : ""
                   }`}
                 >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 text-xs font-mono font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded">
-                        {course.code}
-                      </span>
-                      {activeCourse?.id === course.id && (
-                        <span className="px-2 py-0.5 text-xs font-medium bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300 rounded">
-                          Active
-                        </span>
+                  <div className="flex gap-4">
+                    {/* Icon */}
+                    <div className="mt-0.5 shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <BookOpen
+                          className="w-5 h-5"
+                          style={{ color: "#8DBF5A" }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="px-2 py-0.5 text-xs font-mono font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded">
+                            {course.code}
+                          </span>
+                          {activeCourse?.id === course.id && (
+                            <span
+                              className="px-2 py-0.5 text-xs font-medium rounded"
+                              style={{
+                                backgroundColor: "#8DBF5A22",
+                                color: "#5a8a2a",
+                              }}
+                            >
+                              Active
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span
+                            role="button"
+                            tabIndex={0}
+                            title="Leave course"
+                            onClick={(e) => handleLeaveCourse(e, course.id)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter")
+                                handleLeaveCourse(e as any, course.id);
+                            }}
+                            className="p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-all"
+                          >
+                            {leavingCourseId === course.id ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-red-400" />
+                            ) : (
+                              <LogOut className="w-3.5 h-3.5 text-red-400" />
+                            )}
+                          </span>
+                          <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-green-500 transition-colors" />
+                        </div>
+                        {/* Arrow always visible when not hovered */}
+                        <ArrowRight className="w-5 h-5 text-slate-300 dark:text-slate-600 group-hover:opacity-0 transition-opacity absolute" />
+                      </div>
+
+                      <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 truncate pr-4">
+                        {course.name}
+                      </h3>
+
+                      {course.description && (
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
+                          {course.description}
+                        </p>
                       )}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span
-                        role="button"
-                        tabIndex={0}
-                        title="Leave course"
-                        onClick={(e) => handleLeaveCourse(e, course.id)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") handleLeaveCourse(e as any, course.id);
-                        }}
-                        className="p-1 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-50 dark:hover:bg-red-900/30 transition-all"
-                      >
-                        {leavingCourseId === course.id ? (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin text-red-400" />
-                        ) : (
-                          <LogOut className="w-3.5 h-3.5 text-red-400 hover:text-red-500" />
+
+                      <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-slate-500 mt-2">
+                        {course.professor_name && (
+                          <span className="flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            {course.professor_name}
+                          </span>
                         )}
-                      </span>
-                      <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-teal-500 transition-colors" />
+                        {course.enrolled_count != null && (
+                          <span className="flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            {course.enrolled_count} students
+                          </span>
+                        )}
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(course.created_at).toLocaleDateString()}
+                        </span>
+                        {course.kb_name && (
+                          <span
+                            className="flex items-center gap-1 font-medium"
+                            style={{ color: "#8DBF5A" }}
+                          >
+                            <BookOpen className="w-3 h-3" />
+                            {course.kb_name}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
-                    {course.name}
-                  </h3>
-
-                  {course.description && (
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2">
-                      {course.description}
-                    </p>
-                  )}
-
-                  <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-slate-500">
-                    {course.professor_name && (
-                      <span className="flex items-center gap-1">
-                        <Users className="w-3 h-3" />
-                        {course.professor_name}
-                      </span>
-                    )}
-                    {course.enrolled_count != null && (
-                      <span className="flex items-center gap-1">
-                        <Users className="w-3 h-3" />
-                        {course.enrolled_count} students
-                      </span>
-                    )}
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
-                      {new Date(course.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-
-                  {course.kb_name && (
-                    <div className="mt-3 flex items-center gap-1.5">
-                      <BookOpen className="w-3 h-3 text-teal-500" />
-                      <span className="text-xs text-teal-600 dark:text-teal-400 font-medium">
-                        {course.kb_name}
-                      </span>
-                    </div>
-                  )}
-                </button>
+                </div>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Join Modal */}
       {showJoinModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 w-full max-w-sm mx-4 shadow-2xl">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-                Join a Course
-              </h2>
+              <div className="flex items-center gap-3">
+                <div
+                  className="p-2 rounded-xl"
+                  style={{ backgroundColor: "#8DBF5A20" }}
+                >
+                  <Plus className="w-5 h-5" style={{ color: "#8DBF5A" }} />
+                </div>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                  Join a Course
+                </h2>
+              </div>
               <button
                 onClick={() => {
                   setShowJoinModal(false);
                   setJoinError("");
                 }}
-                className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
               >
                 <X className="w-4 h-4 text-slate-500" />
               </button>
@@ -259,7 +313,7 @@ export default function CoursesPage() {
               value={enrollCode}
               onChange={(e) => setEnrollCode(e.target.value.toUpperCase())}
               onKeyDown={(e) => e.key === "Enter" && handleJoin()}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-center font-mono text-lg tracking-wider focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-slate-900 dark:text-slate-100"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-center font-mono text-lg tracking-wider focus:outline-none focus:ring-2 focus:ring-green-400/30 focus:border-green-400 text-slate-900 dark:text-slate-100 transition-colors"
               autoFocus
             />
 
@@ -270,7 +324,8 @@ export default function CoursesPage() {
             <button
               onClick={handleJoin}
               disabled={!enrollCode.trim() || joinLoading}
-              className="w-full mt-4 py-3 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+              className="w-full mt-4 py-3 disabled:opacity-50 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 active:scale-[0.98]"
+              style={{ backgroundColor: "#8DBF5A" }}
             >
               {joinLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

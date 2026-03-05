@@ -1,5 +1,3 @@
-# OpenSnek Quickstart
-
 ## Prerequisites
 
 - Python 3 (for setup wizard)
@@ -10,7 +8,7 @@
 ## 1. Configure
 
 ```bash
-git clone https://github.com/your-org/OpenSnek.git
+git clone https://github.com/OpenSnek/OpenSnek.git
 cd OpenSnek
 python3 scripts/setup_wizard.py
 ```

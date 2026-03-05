@@ -1,13 +1,8 @@
 "use client";
 
-/**
- * Join course page — handles direct enrollment links.
- * URL: /courses/join?code=ABCD1234
- */
-
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, Library } from "lucide-react";
 import { apiUrl } from "@/lib/api";
 
 function JoinContent() {
@@ -53,34 +48,52 @@ function JoinContent() {
   }, [code, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 w-full max-w-sm mx-4 shadow-lg text-center">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-6">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-10 w-full max-w-sm text-center">
+        {/* Logo mark */}
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-6"
+          style={{ backgroundColor: "#8DBF5A20" }}
+        >
+          <Library className="w-6 h-6" style={{ color: "#8DBF5A" }} />
+        </div>
+
         {status === "loading" && (
           <>
-            <Loader2 className="w-10 h-10 animate-spin text-teal-500 mx-auto mb-4" />
-            <p className="text-slate-600 dark:text-slate-300">{message}</p>
+            <div
+              className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+              style={{ borderColor: "#8DBF5A", borderTopColor: "transparent" }}
+            />
+            <p className="text-slate-600 dark:text-slate-300 font-medium">
+              {message}
+            </p>
           </>
         )}
 
         {status === "success" && (
           <>
-            <CheckCircle className="w-10 h-10 text-green-500 mx-auto mb-4" />
-            <p className="text-slate-800 dark:text-slate-100 font-semibold mb-2">
+            <CheckCircle
+              className="w-10 h-10 mx-auto mb-4"
+              style={{ color: "#8DBF5A" }}
+            />
+            <p className="text-slate-900 dark:text-slate-100 font-semibold mb-2">
               {message}
             </p>
-            <p className="text-sm text-slate-500">Redirecting to courses...</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500">
+              Redirecting to your courses...
+            </p>
           </>
         )}
 
         {status === "error" && (
           <>
             <XCircle className="w-10 h-10 text-red-500 mx-auto mb-4" />
-            <p className="text-slate-800 dark:text-slate-100 font-semibold mb-4">
+            <p className="text-slate-900 dark:text-slate-100 font-semibold mb-4">
               {message}
             </p>
             <button
               onClick={() => router.push("/courses")}
-              className="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl transition-colors"
+              className="px-4 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl transition-colors text-sm font-medium"
             >
               Go to Courses
             </button>
@@ -95,8 +108,11 @@ export default function JoinCoursePage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-teal-500" />
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+          <div
+            className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin"
+            style={{ borderColor: "#8DBF5A", borderTopColor: "transparent" }}
+          />
         </div>
       }
     >

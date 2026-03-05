@@ -18,7 +18,6 @@ import {
   GraduationCap,
   Lightbulb,
   Github,
-  Globe,
   ChevronsLeft,
   ChevronsRight,
   GripVertical,
@@ -272,16 +271,7 @@ export default function Sidebar() {
               >
                 <ChevronsLeft className="w-4 h-4" />
               </button>
-              <a
-                href="https://hkuds.github.io/DeepTutor/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors"
-                title={t("Visit DeepTutor Homepage")}
-              >
-                <Globe className="w-4 h-4" />
-              </a>
-              <a
+<a
                 href="https://github.com/HKUDS/DeepTutor"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -293,51 +283,6 @@ export default function Sidebar() {
             </div>
           </div>
 
-          {/* Editable Description - only show when expanded */}
-          <div
-            className={`transition-all duration-300 ${
-              sidebarCollapsed ? "opacity-0 h-0 overflow-hidden" : "opacity-100"
-            }`}
-          >
-            {isEditingDescription ? (
-              <div className="flex items-center gap-1">
-                <input
-                  ref={descriptionInputRef}
-                  type="text"
-                  value={editingDescriptionValue}
-                  onChange={(e) => setEditingDescriptionValue(e.target.value)}
-                  onKeyDown={handleDescriptionKeyDown}
-                  className="flex-1 text-[10px] font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-600 px-2 py-1.5 rounded-md border border-blue-300 dark:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  placeholder={t("Enter your description...")}
-                />
-                <button
-                  onClick={handleDescriptionSave}
-                  className="p-1 text-green-500 hover:text-green-600 dark:text-green-400 dark:hover:text-green-300"
-                  title={t("Save")}
-                >
-                  <Check className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  onClick={handleDescriptionCancel}
-                  className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                  title={t("Cancel")}
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ) : (
-              <div
-                onClick={handleDescriptionEdit}
-                className="text-[10px] font-medium text-slate-500 dark:text-slate-400 bg-slate-100/50 dark:bg-slate-700/50 px-2 py-1.5 rounded-md border border-slate-100 dark:border-slate-600 truncate cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-200 dark:hover:border-slate-500 transition-colors group"
-                title={t("Click to edit")}
-              >
-                <span className="group-hover:hidden">{sidebarDescription}</span>
-                <span className="hidden group-hover:inline text-blue-500 dark:text-blue-400">
-                  ✏️ {t("Click to edit")}
-                </span>
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
@@ -345,86 +290,101 @@ export default function Sidebar() {
       {isAuthenticated && courses.length > 0 && (
         <div
           className={`border-b border-slate-100 dark:border-slate-700 transition-all duration-300 ${
-            sidebarCollapsed ? "px-2 py-2" : "px-3 py-2"
+            sidebarCollapsed ? "px-2 py-2" : "px-2 py-2"
           }`}
         >
-          {sidebarCollapsed ? (
-            <div className="relative">
+          <div className="relative">
+            {/* Collapsed: icon only, same as other nav items */}
+            {sidebarCollapsed ? (
               <button
                 onClick={() => setShowCourseDropdown(!showCourseDropdown)}
-                className="w-full flex items-center justify-center p-2 rounded-md hover:bg-white dark:hover:bg-slate-700 transition-colors"
+                className={`group w-full flex items-center justify-center p-2 rounded-md border transition-all duration-200 ${
+                  activeCourse
+                    ? "bg-white dark:bg-slate-700 shadow-sm border-slate-100 dark:border-slate-600"
+                    : "border-transparent hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm hover:border-slate-100 dark:hover:border-slate-600"
+                }`}
                 title={activeCourse?.name || t("Select course")}
               >
-                <Library className="w-5 h-5 text-teal-500" />
+                <Library
+                  className={`w-5 h-5 flex-shrink-0 transition-colors ${
+                    activeCourse
+                      ? "text-blue-500 dark:text-blue-400"
+                      : "text-slate-400 dark:text-slate-500 group-hover:text-blue-500 dark:group-hover:text-blue-400"
+                  }`}
+                />
               </button>
-              {showCourseDropdown && (
-                <div className="absolute left-full ml-2 top-0 z-50 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl py-1 min-w-[200px]">
-                  {courses.map((c) => (
-                    <button
-                      key={c.id}
-                      onClick={() => {
-                        setActiveCourse(c);
-                        if (c.kb_name) setChatState((prev) => ({ ...prev, selectedKb: c.kb_name! }));
-                        setShowCourseDropdown(false);
-                      }}
-                      className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 ${
-                        activeCourse?.id === c.id ? "text-teal-600 font-medium" : "text-slate-700 dark:text-slate-300"
-                      }`}
-                    >
-                      <span className="font-mono text-xs text-slate-400 mr-2">{c.code}</span>
-                      {c.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="relative">
+            ) : (
+              /* Expanded: exactly the same structure + classes as a nav item */
               <button
                 onClick={() => setShowCourseDropdown(!showCourseDropdown)}
-                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800 hover:bg-teal-100 dark:hover:bg-teal-900/30 transition-colors text-left"
+                className={`group w-full flex items-center rounded-md border transition-all duration-200 gap-2.5 pl-2 pr-1.5 py-2 ${
+                  activeCourse
+                    ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm border-slate-100 dark:border-slate-600"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 hover:shadow-sm border-transparent hover:border-slate-100 dark:hover:border-slate-600"
+                }`}
               >
-                <Library className="w-4 h-4 text-teal-500 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs font-medium text-teal-700 dark:text-teal-300 truncate">
-                    {activeCourse?.name || t("Select course")}
-                  </div>
-                  {activeCourse && (
-                    <div className="text-[10px] text-teal-500/70 font-mono">{activeCourse.code}</div>
-                  )}
-                </div>
-                <ChevronDown className={`w-3.5 h-3.5 text-teal-400 transition-transform ${showCourseDropdown ? "rotate-180" : ""}`} />
+                <Library
+                  className={`w-5 h-5 flex-shrink-0 transition-colors ${
+                    activeCourse
+                      ? "text-blue-500 dark:text-blue-400"
+                      : "text-slate-400 dark:text-slate-500 group-hover:text-blue-500 dark:group-hover:text-blue-400"
+                  }`}
+                />
+                <span className="font-medium text-sm whitespace-nowrap flex-1 truncate text-left">
+                  {activeCourse?.name || t("Courses")}
+                </span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 text-slate-400 flex-shrink-0 transition-transform duration-200 ${
+                    showCourseDropdown ? "rotate-180" : ""
+                  }`}
+                />
               </button>
-              {showCourseDropdown && (
-                <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto">
-                  {courses.map((c) => (
-                    <button
-                      key={c.id}
-                      onClick={() => {
-                        setActiveCourse(c);
-                        if (c.kb_name) setChatState((prev) => ({ ...prev, selectedKb: c.kb_name! }));
-                        setShowCourseDropdown(false);
-                      }}
-                      className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${
-                        activeCourse?.id === c.id ? "text-teal-600 dark:text-teal-400 font-medium bg-teal-50/50 dark:bg-teal-900/10" : "text-slate-700 dark:text-slate-300"
-                      }`}
-                    >
-                      <span className="font-mono text-xs text-slate-400 mr-2">{c.code}</span>
-                      {c.name}
-                    </button>
-                  ))}
-                  <Link
-                    href="/courses"
-                    onClick={() => setShowCourseDropdown(false)}
-                    className="w-full text-left px-3 py-2 text-sm text-teal-600 dark:text-teal-400 hover:bg-slate-50 dark:hover:bg-slate-700 border-t border-slate-100 dark:border-slate-700 flex items-center gap-1.5 font-medium"
+            )}
+
+            {/* Dropdown */}
+            {showCourseDropdown && (
+              <div
+                className={`absolute z-50 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto ${
+                  sidebarCollapsed
+                    ? "left-full ml-2 top-0 min-w-[200px]"
+                    : "left-0 right-0 top-full mt-1"
+                }`}
+              >
+                {courses.map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => {
+                      setActiveCourse(c);
+                      if (c.kb_name)
+                        setChatState((prev) => ({
+                          ...prev,
+                          selectedKb: c.kb_name!,
+                        }));
+                      setShowCourseDropdown(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${
+                      activeCourse?.id === c.id
+                        ? "text-blue-600 dark:text-blue-400 font-medium bg-blue-50/50 dark:bg-blue-900/10"
+                        : "text-slate-700 dark:text-slate-300"
+                    }`}
                   >
-                    <BookOpen className="w-3.5 h-3.5" />
-                    {t("All Courses")}
-                  </Link>
-                </div>
-              )}
-            </div>
-          )}
+                    <span className="font-mono text-xs text-slate-400 mr-2">
+                      {c.code}
+                    </span>
+                    {c.name}
+                  </button>
+                ))}
+                <Link
+                  href="/courses"
+                  onClick={() => setShowCourseDropdown(false)}
+                  className="w-full text-left px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-700 border-t border-slate-100 dark:border-slate-700 flex items-center gap-1.5 font-medium transition-colors"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  {t("All Courses")}
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -542,39 +502,50 @@ export default function Sidebar() {
           sidebarCollapsed ? "px-2 py-2" : "px-2 py-2"
         }`}
       >
-        {/* Professor Dashboard link */}
-        {isAuthenticated && (user?.role === "professor" || user?.role === "admin") && (
-          <div className="relative mb-1">
-            <Link
-              href="/professor"
-              className={`flex items-center rounded-md text-sm transition-all duration-200 ${
-                sidebarCollapsed
-                  ? "justify-center p-2"
-                  : "gap-2.5 pl-2 pr-1.5 py-2"
-              } ${
-                pathname.startsWith("/professor")
-                  ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
-                  : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-amber-600 dark:hover:text-amber-400 border border-transparent"
-              }`}
-              onMouseEnter={() => sidebarCollapsed && setShowTooltip("/professor")}
-              onMouseLeave={() => setShowTooltip(null)}
-            >
-              <LayoutDashboard className="w-5 h-5 flex-shrink-0 text-amber-500" />
-              <span
-                className={`whitespace-nowrap flex-1 transition-all duration-300 ${
-                  sidebarCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
+        {/* Professor Dashboard link — same structure and classes as Settings */}
+        {isAuthenticated &&
+          (user?.role === "professor" || user?.role === "admin") && (
+            <div className="relative mb-1">
+              <Link
+                href="/professor"
+                className={`flex items-center rounded-md border transition-all duration-200 ${
+                  sidebarCollapsed
+                    ? "justify-center p-2"
+                    : "gap-2.5 pl-2 pr-1.5 py-2"
+                } ${
+                  pathname.startsWith("/professor")
+                    ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm border-slate-100 dark:border-slate-600"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 border-transparent"
                 }`}
+                onMouseEnter={() =>
+                  sidebarCollapsed && setShowTooltip("/professor")
+                }
+                onMouseLeave={() => setShowTooltip(null)}
               >
-                {t("Professor Dashboard")}
-              </span>
-            </Link>
-            {sidebarCollapsed && showTooltip === "/professor" && (
-              <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50 px-2.5 py-1.5 bg-slate-900 dark:bg-slate-700 text-white text-xs rounded-lg shadow-lg whitespace-nowrap pointer-events-none">
-                {t("Professor Dashboard")}
-              </div>
-            )}
-          </div>
-        )}
+                <LayoutDashboard
+                  className={`w-5 h-5 flex-shrink-0 transition-colors ${
+                    pathname.startsWith("/professor")
+                      ? "text-blue-500 dark:text-blue-400"
+                      : "text-slate-400 dark:text-slate-500"
+                  }`}
+                />
+                <span
+                  className={`whitespace-nowrap flex-1 transition-all duration-300 ${
+                    sidebarCollapsed
+                      ? "opacity-0 w-0 overflow-hidden"
+                      : "opacity-100"
+                  }`}
+                >
+                  {t("Professor Dashboard")}
+                </span>
+              </Link>
+              {sidebarCollapsed && showTooltip === "/professor" && (
+                <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50 px-2.5 py-1.5 bg-slate-900 dark:bg-slate-700 text-white text-xs rounded-lg shadow-lg whitespace-nowrap pointer-events-none">
+                  {t("Professor Dashboard")}
+                </div>
+              )}
+            </div>
+          )}
 
         {/* Settings */}
         <div className="relative">

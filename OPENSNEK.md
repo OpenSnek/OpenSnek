@@ -444,11 +444,3 @@ git fetch upstream
 git merge upstream/main
 # Resolve conflicts (minimal — OpenSnek changes are mostly additive)
 ```
-
----
-
-## 📄 License
-
-This project is licensed under the [AGPL-3.0 License](LICENSE).
-
-Built on [DeepTutor](https://github.com/HKUDS/DeepTutor) by the [Data Intelligence Lab @ HKU](https://github.com/HKUDS).
