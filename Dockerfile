@@ -19,8 +19,9 @@ FROM node:22-slim AS frontend-builder
 
 WORKDIR /app/web
 
-# Accept build argument for backend port
+# Accept build arguments
 ARG BACKEND_PORT=8001
+ARG UNIVERSITY_NAME=University
 
 # Copy package files first for better caching
 COPY web/package.json web/package-lock.json* ./
@@ -30,6 +31,9 @@ RUN npm ci --legacy-peer-deps
 
 # Copy frontend source code
 COPY web/ ./
+
+# Expose build args as env vars so next.config.js can read them at build time
+ENV UNIVERSITY_NAME=$UNIVERSITY_NAME
 
 # Create .env.local with placeholder that will be replaced at runtime
 # Use a unique placeholder that can be safely replaced

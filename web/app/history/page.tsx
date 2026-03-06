@@ -376,8 +376,8 @@ export default function HistoryPage() {
                                 {new Date(
                                   entry.timestamp * 1000,
                                 ).toLocaleTimeString(
-                                  uiSettings.language === "zh"
-                                    ? "zh-CN"
+                                  uiSettings.language === "nl"
+                                    ? "nl-NL"
                                     : "en-US",
                                   { hour: "2-digit", minute: "2-digit" },
                                 )}

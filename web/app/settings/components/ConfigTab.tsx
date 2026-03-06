@@ -72,9 +72,10 @@ export default function ConfigTab({
     }
   };
 
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
   const deleteConfig = async (configId: string) => {
-    if (!confirm(t("Are you sure you want to delete this configuration?")))
-      return;
+    setConfirmDeleteId(null);
 
     try {
       const res = await fetch(
@@ -268,13 +269,31 @@ export default function ConfigTab({
                   </button>
                 )}
                 {!config.is_default && (
-                  <button
-                    onClick={() => deleteConfig(config.id)}
-                    className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                    title={t("Delete")}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  confirmDeleteId === config.id ? (
+                    /* Inline confirmation */
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => setConfirmDeleteId(null)}
+                        className="px-2 py-1 text-xs rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                      >
+                        {t("Cancel")}
+                      </button>
+                      <button
+                        onClick={() => deleteConfig(config.id)}
+                        className="px-2 py-1 text-xs rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors"
+                      >
+                        {t("Delete")}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setConfirmDeleteId(config.id)}
+                      className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                      title={t("Delete")}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )
                 )}
               </div>
             </div>

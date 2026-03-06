@@ -25,7 +25,6 @@ import {
   X,
   LucideIcon,
   LogOut,
-  ChevronDown,
   LayoutDashboard,
   Library,
 } from "lucide-react";
@@ -67,12 +66,10 @@ export default function Sidebar() {
     setSidebarDescription,
     sidebarNavOrder,
     setSidebarNavOrder,
-    setChatState,
   } = useGlobal();
   const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
-  const { courses, activeCourse, setActiveCourse } = useCourse();
-  const [showCourseDropdown, setShowCourseDropdown] = useState(false);
+  const { courses } = useCourse();
 
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
 
@@ -228,7 +225,7 @@ export default function Sidebar() {
       {/* Header */}
       <div
         className={`border-b border-slate-100 dark:border-slate-700 transition-all duration-300 ${
-          sidebarCollapsed ? "px-2 py-3" : "px-4 py-3"
+          sidebarCollapsed ? "px-2 py-4" : "px-4 py-4"
         }`}
       >
         <div className="flex flex-col gap-2">
@@ -236,12 +233,12 @@ export default function Sidebar() {
             className={`flex items-center ${sidebarCollapsed ? "justify-center" : "justify-between"}`}
           >
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
                 <Image
                   src="/logo.png"
                   alt={t("DeepTutor Logo")}
-                  width={32}
-                  height={32}
+                  width={40}
+                  height={40}
                   className="object-contain"
                   priority
                 />
@@ -272,7 +269,7 @@ export default function Sidebar() {
                 <ChevronsLeft className="w-4 h-4" />
               </button>
 <a
-                href="https://github.com/HKUDS/DeepTutor"
+                href="https://github.com/OpenSnek/OpenSnek"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors"
@@ -286,7 +283,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* Course Selector — only when authenticated and courses exist */}
+      {/* Courses link — only when authenticated and enrolled in courses */}
       {isAuthenticated && courses.length > 0 && (
         <div
           className={`border-b border-slate-100 dark:border-slate-700 transition-all duration-300 ${
@@ -294,94 +291,38 @@ export default function Sidebar() {
           }`}
         >
           <div className="relative">
-            {/* Collapsed: icon only, same as other nav items */}
-            {sidebarCollapsed ? (
-              <button
-                onClick={() => setShowCourseDropdown(!showCourseDropdown)}
-                className={`group w-full flex items-center justify-center p-2 rounded-md border transition-all duration-200 ${
-                  activeCourse
-                    ? "bg-white dark:bg-slate-700 shadow-sm border-slate-100 dark:border-slate-600"
-                    : "border-transparent hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm hover:border-slate-100 dark:hover:border-slate-600"
+            <Link
+              href="/courses"
+              className={`group flex items-center rounded-md border transition-all duration-200 ${
+                sidebarCollapsed
+                  ? "justify-center p-2"
+                  : "gap-2.5 pl-2 pr-1.5 py-2"
+              } ${
+                pathname === "/courses"
+                  ? "bg-white dark:bg-slate-700 text-green-700 dark:text-[#8DBF5A] shadow-sm border-slate-100 dark:border-slate-600"
+                  : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-green-700 dark:hover:text-[#8DBF5A] hover:shadow-sm border-transparent hover:border-slate-100 dark:hover:border-slate-600"
+              }`}
+              onMouseEnter={() => sidebarCollapsed && setShowTooltip("/courses")}
+              onMouseLeave={() => setShowTooltip(null)}
+            >
+              <Library
+                className={`w-5 h-5 flex-shrink-0 transition-colors ${
+                  pathname === "/courses"
+                    ? "text-green-600 dark:text-[#8DBF5A]"
+                    : "text-slate-400 dark:text-slate-500 group-hover:text-green-600 dark:group-hover:text-[#8DBF5A]"
                 }`}
-                title={activeCourse?.name || t("Select course")}
-              >
-                <Library
-                  className={`w-5 h-5 flex-shrink-0 transition-colors ${
-                    activeCourse
-                      ? "text-green-600 dark:text-[#8DBF5A]"
-                      : "text-slate-400 dark:text-slate-500 group-hover:text-green-600 dark:group-hover:text-[#8DBF5A]"
-                  }`}
-                />
-              </button>
-            ) : (
-              /* Expanded: exactly the same structure + classes as a nav item */
-              <button
-                onClick={() => setShowCourseDropdown(!showCourseDropdown)}
-                className={`group w-full flex items-center rounded-md border transition-all duration-200 gap-2.5 pl-2 pr-1.5 py-2 ${
-                  activeCourse
-                    ? "bg-white dark:bg-slate-700 text-green-700 dark:text-[#8DBF5A] shadow-sm border-slate-100 dark:border-slate-600"
-                    : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-green-700 dark:hover:text-[#8DBF5A] hover:shadow-sm border-transparent hover:border-slate-100 dark:hover:border-slate-600"
+              />
+              <span
+                className={`font-medium text-sm whitespace-nowrap flex-1 transition-all duration-300 ${
+                  sidebarCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
                 }`}
               >
-                <Library
-                  className={`w-5 h-5 flex-shrink-0 transition-colors ${
-                    activeCourse
-                      ? "text-green-600 dark:text-[#8DBF5A]"
-                      : "text-slate-400 dark:text-slate-500 group-hover:text-green-600 dark:group-hover:text-[#8DBF5A]"
-                  }`}
-                />
-                <span className="font-medium text-sm whitespace-nowrap flex-1 truncate text-left">
-                  {activeCourse?.name || t("Courses")}
-                </span>
-                <ChevronDown
-                  className={`w-3.5 h-3.5 text-slate-400 flex-shrink-0 transition-transform duration-200 ${
-                    showCourseDropdown ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-            )}
-
-            {/* Dropdown */}
-            {showCourseDropdown && (
-              <div
-                className={`absolute z-50 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto ${
-                  sidebarCollapsed
-                    ? "left-full ml-2 top-0 min-w-[200px]"
-                    : "left-0 right-0 top-full mt-1"
-                }`}
-              >
-                {courses.map((c) => (
-                  <button
-                    key={c.id}
-                    onClick={() => {
-                      setActiveCourse(c);
-                      if (c.kb_name)
-                        setChatState((prev) => ({
-                          ...prev,
-                          selectedKb: c.kb_name!,
-                        }));
-                      setShowCourseDropdown(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${
-                      activeCourse?.id === c.id
-                        ? "text-green-700 dark:text-[#8DBF5A] font-medium bg-green-50/50 dark:bg-green-900/10"
-                        : "text-slate-700 dark:text-slate-300"
-                    }`}
-                  >
-                    <span className="font-mono text-xs text-slate-400 mr-2">
-                      {c.code}
-                    </span>
-                    {c.name}
-                  </button>
-                ))}
-                <Link
-                  href="/courses"
-                  onClick={() => setShowCourseDropdown(false)}
-                  className="w-full text-left px-3 py-2 text-sm text-green-700 dark:text-[#8DBF5A] hover:bg-slate-50 dark:hover:bg-slate-700 border-t border-slate-100 dark:border-slate-700 flex items-center gap-1.5 font-medium transition-colors"
-                >
-                  <BookOpen className="w-3.5 h-3.5" />
-                  {t("All Courses")}
-                </Link>
+                {t("Courses")}
+              </span>
+            </Link>
+            {sidebarCollapsed && showTooltip === "/courses" && (
+              <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50 px-2.5 py-1.5 bg-slate-900 dark:bg-slate-700 text-white text-xs rounded-lg shadow-lg whitespace-nowrap pointer-events-none">
+                {t("Courses")}
               </div>
             )}
           </div>

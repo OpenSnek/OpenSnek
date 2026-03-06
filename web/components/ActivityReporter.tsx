@@ -21,7 +21,6 @@ import { reportActivity } from "@/lib/activity";
 export function ActivityReporter() {
   const { isAuthenticated } = useAuth();
   const { solverState, chatState, questionState, researchState } = useGlobal();
-  const { activeCourse } = useCourse();
 
   // Track previous states to detect transitions
   const prevSolverSolving = useRef(false);
@@ -42,7 +41,6 @@ export function ActivityReporter() {
         feature: "solver",
         topic: solverState.question,
         sessionId: solverState.sessionId || undefined,
-        courseId: activeCourse?.id,
       });
     }
     prevSolverSolving.current = solverState.isSolving;
@@ -64,7 +62,6 @@ export function ActivityReporter() {
         feature: "chat",
         topic: lastUserMsg?.content?.slice(0, 200),
         sessionId: chatState.sessionId || undefined,
-        courseId: activeCourse?.id,
       });
     }
     prevChatLoading.current = chatState.isLoading;
@@ -82,7 +79,6 @@ export function ActivityReporter() {
       reportActivity({
         feature: "question",
         topic: questionState.topic,
-        courseId: activeCourse?.id,
         metadata: {
           count: questionState.results.length,
           mode: questionState.mode,
@@ -103,7 +99,6 @@ export function ActivityReporter() {
       reportActivity({
         feature: "research",
         topic: researchState.topic,
-        courseId: activeCourse?.id,
       });
     }
     prevResearchStatus.current = researchState.status;

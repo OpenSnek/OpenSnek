@@ -197,7 +197,7 @@ export default function KnowledgePage() {
   const PROVIDER_FILE_HINTS: Record<string, string> = {
     llamaindex: "PDF, TXT, MD, JSON, CSV, HTML, XML...",
     lightrag: "PDF, TXT, MD, JSON, CSV, HTML, XML...",
-    raganything: "PDF, Word, 图片, TXT, MD, JSON, CSV, HTML...",
+    raganything: "PDF, Word, Images, TXT, MD, JSON, CSV, HTML...",
   };
 
   // Get supported extensions for current provider
@@ -765,13 +765,10 @@ export default function KnowledgePage() {
     };
   }, []);
 
+  const [confirmDeleteKb, setConfirmDeleteKb] = useState<string | null>(null);
+
   const handleDelete = async (name: string) => {
-    if (
-      !confirm(
-        `Are you sure you want to delete knowledge base "${name}"? This cannot be undone.`,
-      )
-    )
-      return;
+    setConfirmDeleteKb(null);
 
     try {
       const res = await fetch(apiUrl(`/api/v1/knowledge/${name}`), {
@@ -1100,13 +1097,31 @@ export default function KnowledgePage() {
                   >
                     <Upload className="w-4 h-4" />
                   </button>
-                  <button
-                    onClick={() => handleDelete(kb.name)}
-                    className="p-2 hover:bg-red-100 dark:hover:bg-red-900/40 rounded-lg text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                    title={t("Delete Knowledge Base")}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  {confirmDeleteKb === kb.name ? (
+                    /* Inline confirmation */
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => setConfirmDeleteKb(null)}
+                        className="px-2 py-1 text-xs rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => handleDelete(kb.name)}
+                        className="px-2 py-1 text-xs rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setConfirmDeleteKb(kb.name)}
+                      className="p-2 hover:bg-red-100 dark:hover:bg-red-900/40 rounded-lg text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                      title={t("Delete Knowledge Base")}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
 

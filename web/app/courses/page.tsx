@@ -1,62 +1,45 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   BookOpen,
   Users,
   Calendar,
   Plus,
-  ArrowRight,
   Loader2,
   LogOut,
   X,
   Library,
 } from "lucide-react";
-import { useCourse, Course } from "@/context/CourseContext";
+import { useCourse } from "@/context/CourseContext";
 import { useAuth } from "@/context/AuthContext";
-import { useGlobal } from "@/context/GlobalContext";
 import { apiUrl } from "@/lib/api";
 
 export default function CoursesPage() {
-  const { courses, activeCourse, setActiveCourse, refreshCourses, isLoading } =
-    useCourse();
+  const { courses, refreshCourses, isLoading } = useCourse();
   const { user } = useAuth();
-  const { setChatState } = useGlobal();
-  const router = useRouter();
 
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [enrollCode, setEnrollCode] = useState("");
   const [joinLoading, setJoinLoading] = useState(false);
   const [joinError, setJoinError] = useState("");
   const [leavingCourseId, setLeavingCourseId] = useState<string | null>(null);
+  const [confirmLeaveId, setConfirmLeaveId] = useState<string | null>(null);
 
-  const handleLeaveCourse = async (e: React.MouseEvent, courseId: string) => {
-    e.stopPropagation();
-    if (!confirm("Are you sure you want to leave this course?")) return;
+  const handleLeaveCourse = async (courseId: string) => {
+    setConfirmLeaveId(null);
     setLeavingCourseId(courseId);
     try {
       const res = await fetch(
         apiUrl(`/api/v1/opensnek/courses/${courseId}/leave`),
         { method: "DELETE", credentials: "include" },
       );
-      if (res.ok) {
-        if (activeCourse?.id === courseId) setActiveCourse(null);
-        await refreshCourses();
-      }
+      if (res.ok) await refreshCourses();
     } catch {
       // Silently fail — course list will refresh next visit
     } finally {
       setLeavingCourseId(null);
     }
-  };
-
-  const handleSelectCourse = (course: Course) => {
-    setActiveCourse(course);
-    if (course.kb_name) {
-      setChatState((prev) => ({ ...prev, selectedKb: course.kb_name! }));
-    }
-    router.push("/");
   };
 
   const handleJoin = async () => {
@@ -169,17 +152,12 @@ export default function CoursesPage() {
               {courses.map((course) => (
                 <div
                   key={course.id}
-                  onClick={() => handleSelectCourse(course)}
-                  className={`px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group cursor-pointer ${
-                    activeCourse?.id === course.id
-                      ? "bg-green-50/50 dark:bg-green-900/10"
-                      : ""
-                  }`}
+                  className="px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group"
                 >
                   <div className="flex gap-4">
                     {/* Icon */}
                     <div className="mt-0.5 shrink-0">
-                      <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center">
                         <BookOpen
                           className="w-5 h-5"
                           style={{ color: "#8DBF5A" }}
@@ -194,40 +172,46 @@ export default function CoursesPage() {
                           <span className="px-2 py-0.5 text-xs font-mono font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded">
                             {course.code}
                           </span>
-                          {activeCourse?.id === course.id && (
+                        </div>
+
+                        {/* Leave control */}
+                        <div className="flex items-center gap-1">
+                          {confirmLeaveId === course.id ? (
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs text-red-500 font-medium mr-1">
+                                Leave?
+                              </span>
+                              <button
+                                onClick={() => setConfirmLeaveId(null)}
+                                className="px-2 py-0.5 text-xs rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                onClick={() => handleLeaveCourse(course.id)}
+                                className="px-2 py-0.5 text-xs rounded-md bg-red-500 text-white hover:bg-red-600 transition-colors"
+                              >
+                                Leave
+                              </button>
+                            </div>
+                          ) : leavingCourseId === course.id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-red-400" />
+                          ) : (
                             <span
-                              className="px-2 py-0.5 text-xs font-medium rounded"
-                              style={{
-                                backgroundColor: "#8DBF5A22",
-                                color: "#5a8a2a",
+                              role="button"
+                              tabIndex={0}
+                              title="Leave course"
+                              onClick={() => setConfirmLeaveId(course.id)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter")
+                                  setConfirmLeaveId(course.id);
                               }}
+                              className="p-1 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-50 dark:hover:bg-red-900/30 transition-all cursor-pointer"
                             >
-                              Active
+                              <LogOut className="w-3.5 h-3.5 text-red-400" />
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span
-                            role="button"
-                            tabIndex={0}
-                            title="Leave course"
-                            onClick={(e) => handleLeaveCourse(e, course.id)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter")
-                                handleLeaveCourse(e as any, course.id);
-                            }}
-                            className="p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-all"
-                          >
-                            {leavingCourseId === course.id ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin text-red-400" />
-                            ) : (
-                              <LogOut className="w-3.5 h-3.5 text-red-400" />
-                            )}
-                          </span>
-                          <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-green-500 transition-colors" />
-                        </div>
-                        {/* Arrow always visible when not hovered */}
-                        <ArrowRight className="w-5 h-5 text-slate-300 dark:text-slate-600 group-hover:opacity-0 transition-opacity absolute" />
                       </div>
 
                       <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 truncate pr-4">

@@ -68,6 +68,8 @@ services:
       args:
         # Pass backend port at build time for Next.js static optimization
         - BACKEND_PORT=${BACKEND_PORT:-8001}
+        # Pass university name at build time so it gets baked into the frontend
+        - UNIVERSITY_NAME=${UNIVERSITY_NAME:-University}
     container_name: opensnek
     restart: unless-stopped
     depends_on:

@@ -135,9 +135,10 @@ async def leave_course(
         """),
         {"eid": enrollment_id, "oid": user.azure_oid},
     )
+    deleted = result.first()  # must fetch before commit — cursor closes after commit
     await db.commit()
 
-    if not result.first() and user.role != "admin":
+    if not deleted and user.role != "admin":
         raise HTTPException(status_code=403, detail="Not authorized")
     elif user.role == "admin":
         await db.execute(text("DELETE FROM enrollments WHERE id = :eid"), {"eid": enrollment_id})
@@ -164,9 +165,10 @@ async def leave_course(
         """),
         {"cid": course_id, "oid": user.azure_oid},
     )
+    deleted = result.first()  # must fetch before commit — cursor closes after commit
     await db.commit()
 
-    if not result.first():
+    if not deleted:
         raise HTTPException(status_code=404, detail="Not enrolled in this course")
 
     return {"status": "ok"}

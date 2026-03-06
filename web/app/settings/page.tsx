@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { apiUrl } from "@/lib/api";
 import { useGlobal } from "@/context/GlobalContext";
+import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
 import { OverviewTab, ConfigTab } from "./components";
 import { FullStatus, PortsInfo, TabType } from "./types";
@@ -25,7 +26,10 @@ import { getStorageStats } from "@/lib/persistence";
 export default function SettingsPage() {
   const { uiSettings, updateTheme, updateLanguage, clearAllPersistence } =
     useGlobal();
+  const { user } = useAuth();
   const { t } = useTranslation();
+  const isAdminOrProfessor =
+    user?.role === "professor" || user?.role === "admin";
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [storageStats, setStorageStats] = useState<{
     totalSize: number;
@@ -42,11 +46,15 @@ export default function SettingsPage() {
   const [ports, setPorts] = useState<PortsInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Load initial data
+  // Load initial data — only needed for admin/professor tabs
   useEffect(() => {
-    loadStatus();
-    loadPorts();
-  }, []);
+    if (isAdminOrProfessor) {
+      loadStatus();
+      loadPorts();
+    } else {
+      setLoading(false);
+    }
+  }, [isAdminOrProfessor]);
 
   const loadStatus = async () => {
     try {
@@ -181,32 +189,36 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* Separator */}
-            <div className="h-8 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+            {isAdminOrProfessor && (
+              <>
+                {/* Separator */}
+                <div className="h-8 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block" />
 
-            {/* Clear Data */}
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                <Trash2 className="w-4 h-4" />
-                <span>{t("Local Data")}</span>
-                {storageStats && (
-                  <span className="text-xs text-slate-400 dark:text-slate-500">
-                    ({(storageStats.totalSize / 1024).toFixed(1)} KB)
-                  </span>
-                )}
-              </div>
-              <button
-                onClick={() => setShowClearConfirm(true)}
-                className="px-3 py-1.5 rounded-md text-sm bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-all"
-              >
-                {t("Clear Cache")}
-              </button>
-            </div>
+                {/* Clear Data */}
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                    <Trash2 className="w-4 h-4" />
+                    <span>{t("Local Data")}</span>
+                    {storageStats && (
+                      <span className="text-xs text-slate-400 dark:text-slate-500">
+                        ({(storageStats.totalSize / 1024).toFixed(1)} KB)
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => setShowClearConfirm(true)}
+                    className="px-3 py-1.5 rounded-md text-sm bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-all"
+                  >
+                    {t("Clear Cache")}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Clear Confirmation Modal */}
-        {showClearConfirm && (
+        {/* Clear Confirmation Modal — admin/professor only */}
+        {isAdminOrProfessor && showClearConfirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 max-w-md mx-4 shadow-2xl">
               <div className="flex items-center gap-3 mb-4">
@@ -249,74 +261,77 @@ export default function SettingsPage() {
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl mb-6">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                activeTab === tab.id
-                  ? "bg-white dark:bg-slate-700 text-green-700 dark:text-[#8DBF5A] shadow-sm"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-              }`}
-            >
-              {tab.icon}
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        {/* Tabs + content — admin/professor only */}
+        {isAdminOrProfessor && (
+          <>
+            <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl mb-6">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                    activeTab === tab.id
+                      ? "bg-white dark:bg-slate-700 text-green-700 dark:text-[#8DBF5A] shadow-sm"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                  }`}
+                >
+                  {tab.icon}
+                  {tab.label}
+                </button>
+              ))}
+            </div>
 
-        {/* Content */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-          {activeTab === "overview" && (
-            <OverviewTab
-              status={status}
-              ports={ports}
-              onRefresh={loadStatus}
-              t={t}
-            />
-          )}
-          {activeTab === "llm" && (
-            <ConfigTab
-              configType="llm"
-              title={t("LLM Configuration")}
-              description={t("Configure language model providers")}
-              onUpdate={loadStatus}
-              t={t}
-            />
-          )}
-          {activeTab === "embedding" && (
-            <ConfigTab
-              configType="embedding"
-              title={t("Embedding Configuration")}
-              description={t("Configure embedding model providers")}
-              onUpdate={loadStatus}
-              showDimensions
-              t={t}
-            />
-          )}
-          {activeTab === "tts" && (
-            <ConfigTab
-              configType="tts"
-              title={t("TTS Configuration")}
-              description={t("Configure text-to-speech providers")}
-              onUpdate={loadStatus}
-              showVoice
-              t={t}
-            />
-          )}
-          {activeTab === "search" && (
-            <ConfigTab
-              configType="search"
-              title={t("Search Configuration")}
-              description={t("Configure web search providers")}
-              onUpdate={loadStatus}
-              isSearchConfig
-              t={t}
-            />
-          )}
-        </div>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+              {activeTab === "overview" && (
+                <OverviewTab
+                  status={status}
+                  ports={ports}
+                  onRefresh={loadStatus}
+                  t={t}
+                />
+              )}
+              {activeTab === "llm" && (
+                <ConfigTab
+                  configType="llm"
+                  title={t("LLM Configuration")}
+                  description={t("Configure language model providers")}
+                  onUpdate={loadStatus}
+                  t={t}
+                />
+              )}
+              {activeTab === "embedding" && (
+                <ConfigTab
+                  configType="embedding"
+                  title={t("Embedding Configuration")}
+                  description={t("Configure embedding model providers")}
+                  onUpdate={loadStatus}
+                  showDimensions
+                  t={t}
+                />
+              )}
+              {activeTab === "tts" && (
+                <ConfigTab
+                  configType="tts"
+                  title={t("TTS Configuration")}
+                  description={t("Configure text-to-speech providers")}
+                  onUpdate={loadStatus}
+                  showVoice
+                  t={t}
+                />
+              )}
+              {activeTab === "search" && (
+                <ConfigTab
+                  configType="search"
+                  title={t("Search Configuration")}
+                  description={t("Configure web search providers")}
+                  onUpdate={loadStatus}
+                  isSearchConfig
+                  t={t}
+                />
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
